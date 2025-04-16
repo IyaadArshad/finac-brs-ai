@@ -20,8 +20,8 @@ export default function Home() {
       </div>
 
       {/* Main content - centered vertically */}
-      <main className="flex-1 flex flex-col items-center justify-center">
-        <div className="w-full max-w-2xl flex flex-col items-center px-4">
+      <main className="flex-1 flex flex-col items-center justify-center -mt-6">
+        <div className="w-full max-w-2xl flex flex-col items-center px-4 pt-0">
           {/* Logo */}
           <div className="mb-3 w-32 h-32 relative">
             <Image
