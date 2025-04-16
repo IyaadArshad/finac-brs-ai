@@ -3,7 +3,7 @@ import { formatDate } from "@/lib/utils";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-dvh bg-white justify-center">
       {/* Top section with date and user icon */}
       <div className="flex justify-between items-center w-full p-2">
         <div className="text-[#1A479D] pl-2 text-lg font-medium">
