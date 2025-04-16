@@ -40,7 +40,7 @@ export default function Home() {
           </h1>
 
           <p className="text-gray-500 mb-6 text-md text-center">
-            Type a message to start your conversation
+            Type a message to start your BRS generation process
           </p>
 
           {/* Input box */}
