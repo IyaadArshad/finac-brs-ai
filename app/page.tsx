@@ -1,14 +1,20 @@
-import Image from "next/image"
-import { formatDate } from "@/lib/utils"
+import Image from "next/image";
+import { formatDate } from "@/lib/utils";
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Top section with date and user icon */}
       <div className="flex justify-between items-center w-full p-6">
-        <div className="text-[#1A479D] text-lg font-medium">{formatDate(new Date())}</div>
+        <div className="text-[#1A479D] text-lg font-medium">
+          {formatDate(new Date())}
+        </div>
         <div className="relative w-12 h-12 border-2 border-[#1A479D] rounded-full overflow-hidden flex items-center justify-center bg-white">
-          <svg viewBox="0 0 24 24" className="w-8 h-8 text-[#1A479D]" fill="currentColor">
+          <svg
+            viewBox="0 0 24 24"
+            className="w-8 h-8 text-[#1A479D]"
+            fill="currentColor"
+          >
             <circle cx="12" cy="7" r="4" />
             <path d="M12 11c-3.866 0-7 3.134-7 7v2h14v-2c0-3.866-3.134-7-7-7z" />
           </svg>
@@ -31,10 +37,13 @@ export default function Home() {
 
           {/* Welcome text */}
           <h1 className="text-4xl font-semibold mb-1 text-center">
-            <span className="text-[#1A479D] font-bold">FiNAC BRS AI</span> Welcomes You
+            <span className="text-[#1A479D] font-bold">FiNAC BRS AI</span>{" "}
+            Welcomes You
           </h1>
 
-          <p className="text-gray-500 mb-6 text-md text-center">Type a message to start your conversation</p>
+          <p className="text-gray-500 mb-6 text-md text-center">
+            Type a message to start your conversation
+          </p>
 
           {/* Input box */}
           <div className="w-full mb-8">
@@ -67,7 +76,9 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="p-4 text-center text-gray-500 text-sm">Powered by FiNAC AI</footer>
+      <footer className="p-4 text-center text-gray-500 text-sm">
+        Powered by FiNAC AI
+      </footer>
     </div>
-  )
+  );
 }
