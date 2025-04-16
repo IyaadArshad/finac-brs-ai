@@ -5,19 +5,17 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Top section with date and user icon */}
-      <div className="flex justify-between items-center w-full p-6">
-        <div className="text-[#1A479D] text-lg font-medium">
+      <div className="flex justify-between items-center w-full p-2">
+        <div className="text-[#1A479D] pl-2 text-lg font-medium">
           {formatDate(new Date())}
         </div>
-        <div className="relative w-12 h-12 border-2 border-[#1A479D] rounded-full overflow-hidden flex items-center justify-center bg-white">
-          <svg
-            viewBox="0 0 24 24"
-            className="w-8 h-8 text-[#1A479D]"
-            fill="currentColor"
-          >
-            <circle cx="12" cy="7" r="4" />
-            <path d="M12 11c-3.866 0-7 3.134-7 7v2h14v-2c0-3.866-3.134-7-7-7z" />
-          </svg>
+        <div className="relative w-12 h-12 border-2 rounded-full overflow-hidden flex items-center justify-center bg-white">
+          <Image
+            src="https://img.icons8.com/material-sharp/384/color/1A479D/user-male-circle.png"
+            alt="User icon"
+            fill
+            className="object-cover relative w-12 h-12 border-2 border-[#1A479D] rounded-full overflow-hidden flex items-center justify-center bg-white"
+          />
         </div>
       </div>
 
@@ -27,7 +25,7 @@ export default function Home() {
           {/* Logo */}
           <div className="mb-3 w-32 h-32 relative">
             <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/finac-logo-removebg-aLpR2MPh5KBTtDt9S0tD9MKhOeyle0.png"
+              src="/logo.png"
               alt="FiNAC Logo"
               fill
               style={{ objectFit: "contain" }}
@@ -51,13 +49,13 @@ export default function Home() {
               <input
                 type="text"
                 placeholder="Type something great here..."
-                className="w-full p-4 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1A479D] focus:border-[#1A479D] hover:border-[#1A479D] transition-colors"
+                className="w-full p-4 border border-gray-300 rounded-full focus:outline-none focus:ring-0 focus:ring-[#1A479D] focus:border-[#1A479D] hover:border-[#1A479D] transition-colors"
               />
-              <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#1A479D]">
+              <button className="absolute right-3 pr-1.5 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#1A479D]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
+                  width="22"
+                  height="22"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
