@@ -20,7 +20,8 @@ import { useSearchParams } from "next/navigation";
 import React, { Suspense } from "react";
 import Image from "next/image";
 import { formatDate } from "@/lib/utils";
-import { parseMarkdown } from "@/utils/markdownParser";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 declare global {
   interface Window {
@@ -204,7 +205,13 @@ function StyledMessageComponent({
               {isUser ? "Empty message" : "No response generated. Please try again."}
             </span>
           ) : (
-            <div dangerouslySetInnerHTML={{ __html: isUser ? message.content || '' : parseMarkdown(message.content || '') }} />
+            isUser ? (
+              <p>{message.content}</p>
+            ) : (
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {message.content || ""}
+              </ReactMarkdown>
+            )
           )}
         </div>
         
