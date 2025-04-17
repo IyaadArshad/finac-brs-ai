@@ -691,9 +691,48 @@ function ChatInterface() {
             // Skip empty or clearly invalid JSON strings
             if (!jsonStr.trim()) continue;
             
-            const json = JSON.parse(jsonStr);
-
-            logVerbose("Stream chunk:", json);
+            let json;
+            try {
+              json = JSON.parse(jsonStr);
+              logVerbose("Stream chunk:", json);
+            } catch (parseError) {
+              console.warn("Attempting to repair malformed JSON string");
+              
+              // Try to fix common JSON issues
+              let repairedJson = jsonStr;
+              
+              // Fix unterminated strings by closing quotes
+              const quoteMatches = repairedJson.match(/"/g);
+              if (quoteMatches && quoteMatches.length % 2 !== 0) {
+                repairedJson += '"';
+              }
+              
+              // Fix missing closing braces and brackets
+              const openBraces = (repairedJson.match(/{/g) || []).length;
+              const closeBraces = (repairedJson.match(/}/g) || []).length;
+              for (let i = 0; i < openBraces - closeBraces; i++) {
+                repairedJson += '}';
+              }
+              
+              const openBrackets = (repairedJson.match(/\[/g) || []).length;
+              const closeBrackets = (repairedJson.match(/\]/g) || []).length;
+              for (let i = 0; i < openBrackets - closeBrackets; i++) {
+                repairedJson += ']';
+              }
+              
+              try {
+                json = JSON.parse(repairedJson);
+                console.log("Successfully repaired and parsed JSON");
+                logVerbose("Repaired stream chunk:", json);
+              } catch (repairError) {
+                // If repair fails, attempt to extract usable data as a fallback
+                console.error("Repair failed. Creating a basic object with available data");
+                json = { 
+                  type: "message", 
+                  content: jsonStr.replace(/[{}[\]"]/g, "").trim() 
+                };
+              }
+            }
 
             switch (json.type) {
               case "function": {
