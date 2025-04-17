@@ -64,6 +64,8 @@ Extra Important things to follow:
   const prompt = `
 Hello, please make these changes:
 ${overview}
+
+If you recieve something that looks like a BRS file itself as user inputs, improve the document and modify it as appropriate
 `;
   try {
     const response = await openai.chat.completions.create({

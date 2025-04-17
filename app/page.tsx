@@ -60,28 +60,23 @@ function WelcomeScreen({
   return (
     <div className="flex flex-col min-h-dvh bg-white text-black">
       {/* Top section with date and user icon */}
-      <div className="flex justify-between items-center w-full p-2">
-        <div className="text-[#1A479D] pl-2 text-lg font-medium">
-          {formatDate(new Date())}
-        </div>
-        <div className="relative w-12 h-12 border-2 rounded-full overflow-hidden flex items-center justify-center bg-white">
-          <Image
-            src="https://img.icons8.com/material-sharp/384/color/1A479D/user-male-circle.png"
-            alt="User icon"
-            width={48}
-            height={48}
-            className="object-cover relative border-2 border-[#1A479D] rounded-full overflow-hidden flex items-center justify-center bg-white"
-          />
+      <div className="flex justify-between items-center w-full p-6">
+        <div className="text-[#1A479D] text-lg font-medium">{formatDate(new Date())}</div>
+        <div className="relative w-12 h-12 border-2 border-[#1A479D] rounded-full overflow-hidden flex items-center justify-center bg-white">
+          <svg viewBox="0 0 24 24" className="w-8 h-8 text-[#1A479D]" fill="currentColor">
+            <circle cx="12" cy="7" r="4" />
+            <path d="M12 11c-3.866 0-7 3.134-7 7v2h14v-2c0-3.866-3.134-7-7-7z" />
+          </svg>
         </div>
       </div>
 
       {/* Main content - centered vertically */}
-      <main className="flex-1 flex flex-col items-center justify-center -mt-6">
-        <div className="w-full max-w-2xl flex flex-col items-center px-4 pt-0">
+      <main className="flex-1 flex flex-col items-center justify-center">
+        <div className="w-full max-w-2xl flex flex-col items-center px-4">
           {/* Logo */}
           <div className="mb-3 w-32 h-32 relative">
             <Image
-              src="/logo.png"
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/finac-logo-removebg-aLpR2MPh5KBTtDt9S0tD9MKhOeyle0.png"
               alt="FiNAC Logo"
               width={128}
               height={128}
@@ -108,7 +103,7 @@ function WelcomeScreen({
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Type something great here..."
-                className="w-full p-4 border border-gray-300 rounded-full focus:outline-none focus:ring-0 focus:ring-[#1A479D] focus:border-[#1A479D] hover:border-[#1A479D] transition-colors"
+                className="w-full p-4 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1A479D] focus:border-[#1A479D] hover:border-[#1A479D] transition-colors"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
@@ -116,15 +111,15 @@ function WelcomeScreen({
                   }
                 }}
               />
-              <button
+              <button 
                 onClick={handleSendMessage}
                 disabled={isStreaming || !message.trim()}
-                className="absolute right-3 hover:cursor-pointer pr-1.5 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#1A479D]"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#1A479D]"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="22"
-                  height="22"
+                  width="24"
+                  height="24"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -150,6 +145,203 @@ function WelcomeScreen({
   );
 }
 
+// New styled message component to match the theme
+function StyledMessageComponent({
+  message,
+  streaming,
+  onEdit,
+  onDelete,
+  onRegenerate,
+}: {
+  message: Message;
+  streaming?: boolean;
+  onEdit: (id: string, content: string) => void;
+  onDelete: (id: string) => void;
+  onRegenerate: (id: string) => Promise<void>;
+}) {
+  const isUser = message.role === 'user';
+  const isEmpty = !message.content || message.content.trim() === '';
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, height: 0 }}
+      className={`px-4 py-6 flex ${isUser ? 'justify-end' : 'justify-start'}`}
+    >
+      <div className={`max-w-3xl ${isUser ? 'order-2' : 'order-1'}`}>
+        {/* Avatar */}
+        <div className={`relative w-8 h-8 ${isUser ? 'ml-3' : 'mr-3'} inline-block align-top`}>
+          <div className={`w-8 h-8 rounded-full border-2 border-[#1A479D] flex items-center justify-center bg-white overflow-hidden`}>
+            {isUser ? (
+              <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#1A479D]" fill="currentColor">
+                <circle cx="12" cy="7" r="4" />
+                <path d="M12 11c-3.866 0-7 3.134-7 7v2h14v-2c0-3.866-3.134-7-7-7z" />
+              </svg>
+            ) : (
+              <Image
+                src="/logo.png"
+                alt="FiNAC AI"
+                width={24}
+                height={24}
+                className="object-contain"
+              />
+            )}
+          </div>
+        </div>
+        
+        {/* Message content */}
+        <div 
+          className={`inline-block px-4 py-2 rounded-2xl max-w-[calc(100%-3rem)] ${
+            isUser 
+              ? 'bg-[#EBF2FF] text-[#1A479D] rounded-tr-none' 
+              : 'bg-white border border-gray-200 text-gray-800 rounded-tl-none'
+          }`}
+        >
+          {isEmpty && !streaming ? (
+            <span className="italic text-gray-400">
+              {isUser ? "Empty message" : "No response generated. Please try again."}
+            </span>
+          ) : (
+            <div dangerouslySetInnerHTML={{ __html: message.content || '' }} />
+          )}
+        </div>
+        
+        {/* Action buttons for assistant messages */}
+        {!isUser && !streaming && (
+          <div className="mt-2 flex space-x-2 text-xs text-gray-500">
+            <button 
+              onClick={() => onRegenerate(message.id)} 
+              className="hover:text-[#1A479D] transition-colors"
+            >
+              Regenerate
+            </button>
+            <button 
+              onClick={() => onDelete(message.id)} 
+              className="hover:text-[#1A479D] transition-colors"
+            >
+              Delete
+            </button>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+// Styled chat input box for conversation
+function StyledChatInputBox({
+  message,
+  setMessage,
+  handleSendMessage,
+  handleStopRequest,
+  isStreaming,
+  commandFilter,
+  setCommandFilter,
+  selectedButtons,
+  setSelectedButtons,
+}: {
+  message: string;
+  setMessage: (value: string) => void;
+  handleSendMessage: () => void;
+  handleStopRequest: () => void;
+  isStreaming: boolean;
+  commandFilter?: string;
+  setCommandFilter?: (value: string) => void;
+  selectedButtons?: {
+    search: boolean;
+    reason: boolean;
+  };
+  setSelectedButtons?: (value: {
+    search: boolean;
+    reason: boolean;
+  }) => void;
+}) {
+  return (
+    <div className="w-full max-w-3xl mx-auto bg-white rounded-xl border border-gray-200 shadow-sm">
+      <div className="relative">
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSendMessage();
+            }
+          }}
+          placeholder="Type something great here..."
+          className="w-full p-4 pr-12 bg-transparent text-gray-800 focus:outline-none resize-none rounded-xl"
+          rows={1}
+          style={{
+            minHeight: "56px",
+            maxHeight: "200px",
+          }}
+        />
+        
+        {isStreaming ? (
+          <button
+            onClick={handleStopRequest}
+            className="absolute right-3 bottom-3 text-gray-400 hover:text-[#1A479D] transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="6" y="6" width="12" height="12" rx="2" ry="2" />
+            </svg>
+          </button>
+        ) : (
+          <button
+            onClick={handleSendMessage}
+            disabled={!message.trim()}
+            className={`absolute right-3 bottom-3 transition-colors ${
+              message.trim() ? "text-[#1A479D] hover:text-[#0D3B8B]" : "text-gray-300"
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m22 2-7 20-4-9-9-4Z" />
+              <path d="M22 2 11 13" />
+            </svg>
+          </button>
+        )}
+      </div>
+      
+      {/* Feature buttons */}
+      {setSelectedButtons && selectedButtons && (
+        <div className="flex border-t border-gray-100 px-3 py-2 text-sm text-gray-600">
+          <button
+            onClick={() => setSelectedButtons({ ...selectedButtons, search: !selectedButtons.search })}
+            className={`mr-3 px-3 py-1 rounded-full ${
+              selectedButtons.search ? "bg-[#EBF2FF] text-[#1A479D]" : "hover:bg-gray-100"
+            }`}
+          >
+            <span className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+              Search
+            </span>
+          </button>
+          <button
+            onClick={() => setSelectedButtons({ ...selectedButtons, reason: !selectedButtons.reason })}
+            className={`px-3 py-1 rounded-full ${
+              selectedButtons.reason ? "bg-[#EBF2FF] text-[#1A479D]" : "hover:bg-gray-100"
+            }`}
+          >
+            <span className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                <path d="M14 19c3.771 0 5.657 0 6.828-1.172C22 16.657 22 14.771 22 11c0-3.771 0-5.657-1.172-6.828C19.657 3 17.771 3 14 3h-4C6.229 3 4.343 3 3.172 4.172 2 5.343 2 7.229 2 11c0 3.771 0 5.657 1.172 6.828.653.654 1.528.943 2.828 1.07" />
+                <path d="M14 19c-1.236 0-2.598.5-3.841 1.145-1.998 1.037-2.997 1.556-3.489 1.225-.492-.33-.399-1.355-.212-3.404L6.5 17.5" />
+                <path d="M7 8h10" />
+                <path d="M7 12h6" />
+              </svg>
+              Reason
+            </span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ChatInterface() {
   const handleSearchParamsChange = (
     splitScreen: string | null,
@@ -163,72 +355,21 @@ function ChatInterface() {
   };
 
   const searchParams = useSearchParams();
-
-  // Add email validation helper function
-  const isValidEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  // Add URL parameter override for user registration
-  useEffect(() => {
-    const nameParam = searchParams?.get("name");
-    const emailParam = searchParams?.get("email");
-
-    if (
-      nameParam &&
-      emailParam &&
-      nameParam.trim() &&
-      isValidEmail(emailParam.trim())
-    ) {
-      try {
-        const defaultAvatarUrl =
-          "https://brs-agent.acroford.com/images/default_pfp.png";
-        const avatarUrl = gravatarUrl(emailParam.trim(), {
-          default: defaultAvatarUrl,
-          size: 200,
-        });
-
-        // Set cookies
-        Cookies.set("gravatar", avatarUrl, { expires: 365 });
-        Cookies.set("userEmail", emailParam.trim(), { expires: 365 });
-        Cookies.set("userName", nameParam.trim(), { expires: 365 });
-        Cookies.set(
-          "user",
-          JSON.stringify({
-            name: nameParam.trim(),
-            email: emailParam.trim(),
-          }),
-          { expires: 365 }
-        );
-
-        // Show success message
-        alert("Override successful. Page will reload.");
-        window.location.href = window.location.pathname; // Reload without parameters
-      } catch (error) {
-        console.error("Error during parameter override:", error);
-        alert("Override failed. Check console for details.");
-      }
-    }
-  }, [searchParams]);
-
   const [message, setMessage] = useState("");
   const [commandFilter, setCommandFilter] = useState("");
   const [splitView, setSplitView] = useState(false);
-  const [editorWidth, setEditorWidth] = useState(50); // customize default width
+  const [editorWidth, setEditorWidth] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
-  const [user, setUser] = useState<{ name: string; email: string } | null>(
-    null
-  );
+  const [user, setUser] = useState<{ name: string; email: string }>({
+    name: "FiNAC User",
+    email: "user@finac.com"
+  });
   const [messages, setMessages] = useState<Message[]>([]);
   const [isConversationStarted, setIsConversationStarted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [newUserName, setNewUserName] = useState("");
-  const [newUserEmail, setNewUserEmail] = useState("");
-  const [isRegistering, setIsRegistering] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
-  const [leftPaneToRight, setLeftPaneToRight] = useState(true); // Changed from false to true
+  const [leftPaneToRight, setLeftPaneToRight] = useState(true);
   const [openedDocument, setOpenedDocument] = useState<string>("");
   const [fileContent, setFileContent] = useState("");
   const [isFileLoading, setIsFileLoading] = useState(false);
@@ -241,57 +382,6 @@ function ChatInterface() {
     latestVersion: number;
     versions: Record<string, string> | null;
   } | null>(null);
-
-  const handleUserRegistration = async () => {
-    if (!newUserName.trim() || !newUserEmail.trim()) return;
-    setIsRegistering(true);
-    try {
-      const defaultAvatarUrl =
-        "https://brs-agent.acroford.com/images/default_pfp.png";
-
-      const avatarUrl = gravatarUrl(newUserEmail.trim(), {
-        default: defaultAvatarUrl, // Use our default image URL as fallback
-        size: 200,
-      });
-
-      // Verify if the gravatar image exists
-      try {
-        const response = await fetch(avatarUrl);
-        if (response.ok) {
-          // If gravatar exists, use it
-          Cookies.set("gravatar", avatarUrl, { expires: 365 });
-        } else {
-          // If gravatar doesn't exist, use default image
-          Cookies.set("gravatar", defaultAvatarUrl, { expires: 365 });
-        }
-      } catch (error) {
-        console.error("Error fetching gravatar:", error);
-        Cookies.set("gravatar", defaultAvatarUrl, { expires: 365 });
-      }
-
-      // Store user data
-      const userData = { name: newUserName.trim(), email: newUserEmail.trim() };
-      Cookies.set("userEmail", newUserEmail.trim(), { expires: 365 });
-      Cookies.set("userName", newUserName.trim(), { expires: 365 });
-      Cookies.set("user", JSON.stringify(userData), { expires: 365 });
-      setUser(userData);
-    } catch (error) {
-      console.error("Error during user registration:", error);
-    } finally {
-      setIsRegistering(false);
-    }
-  };
-
-  useEffect(() => {
-    const userCookie = Cookies.get("user");
-    if (userCookie) {
-      try {
-        setUser(JSON.parse(userCookie));
-      } catch (e) {
-        console.error("Error parsing user cookie:", e);
-      }
-    }
-  }, []);
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
@@ -570,20 +660,22 @@ function ChatInterface() {
 
       const reader = response.body?.getReader();
       let currentMessage = "";
-      let messageId = Date.now().toString();
-      let functionCalls: { description: string; status: "loading" | "done" }[] =
-        [];
+      const messageId = Date.now().toString(); // Store ID in a constant
+      let functionCalls: { description: string; status: "loading" | "done" }[] = [];
 
-      // Create initial message container
+      // Create initial message container with the same ID that we'll reference later
       setMessages((prev) => [
         ...prev,
         {
-          id: messageId,
+          id: messageId, // Use the stored ID
           content: "",
           role: "assistant",
           timestamp: Date.now(),
         },
       ]);
+
+      // Ensure we start processing after the state has updated
+      await new Promise(resolve => setTimeout(resolve, 0));
 
       while (true) {
         const { done, value } = (await reader?.read()) || {};
@@ -596,6 +688,9 @@ function ChatInterface() {
           if (!line.startsWith("data: ")) continue;
           try {
             const jsonStr = line.replace("data: ", "");
+            // Skip empty or clearly invalid JSON strings
+            if (!jsonStr.trim()) continue;
+            
             const json = JSON.parse(jsonStr);
 
             logVerbose("Stream chunk:", json);
@@ -636,15 +731,14 @@ function ChatInterface() {
                 );
 
                 setMessages((prev) => {
-                  const lastMessage = prev[prev.length - 1];
-                  if (lastMessage?.id === messageId) {
-                    return [
-                      ...prev.slice(0, -1),
-                      {
-                        ...lastMessage,
-                        content: `${indicatorsHTML}${currentMessage}`,
-                      },
-                    ];
+                  const messageIndex = prev.findIndex(msg => msg.id === messageId);
+                  if (messageIndex !== -1) {
+                    const updatedMessages = [...prev];
+                    updatedMessages[messageIndex] = {
+                      ...updatedMessages[messageIndex],
+                      content: `${indicatorsHTML}${currentMessage}`,
+                    };
+                    return updatedMessages;
                   }
                   return prev;
                 });
@@ -677,15 +771,14 @@ function ChatInterface() {
                   );
 
                   setMessages((prev) => {
-                    const lastMessage = prev[prev.length - 1];
-                    if (lastMessage?.id === messageId) {
-                      return [
-                        ...prev.slice(0, -1),
-                        {
-                          ...lastMessage,
-                          content: `${indicatorsHTML}${currentMessage}`,
-                        },
-                      ];
+                    const messageIndex = prev.findIndex(msg => msg.id === messageId);
+                    if (messageIndex !== -1) {
+                      const updatedMessages = [...prev];
+                      updatedMessages[messageIndex] = {
+                        ...updatedMessages[messageIndex],
+                        content: `${indicatorsHTML}${currentMessage}`,
+                      };
+                      return updatedMessages;
                     }
                     return prev;
                   });
@@ -723,15 +816,14 @@ function ChatInterface() {
                       : "";
 
                   setMessages((prev) => {
-                    const lastMessage = prev[prev.length - 1];
-                    if (lastMessage?.id === messageId) {
-                      return [
-                        ...prev.slice(0, -1),
-                        {
-                          ...lastMessage,
-                          content: `${indicatorsHTML}${currentMessage}`,
-                        },
-                      ];
+                    const messageIndex = prev.findIndex(msg => msg.id === messageId);
+                    if (messageIndex !== -1) {
+                      const updatedMessages = [...prev];
+                      updatedMessages[messageIndex] = {
+                        ...updatedMessages[messageIndex],
+                        content: `${indicatorsHTML}${currentMessage}`,
+                      };
+                      return updatedMessages;
                     }
                     return prev;
                   });
@@ -750,6 +842,22 @@ function ChatInterface() {
             console.error("Error parsing chunk:", e);
           }
         }
+      }
+
+      // Final update to ensure content is saved properly
+      if (currentMessage) {
+        setMessages((prev) => {
+          const messageIndex = prev.findIndex(msg => msg.id === messageId);
+          if (messageIndex !== -1) {
+            const updatedMessages = [...prev];
+            updatedMessages[messageIndex] = {
+              ...updatedMessages[messageIndex],
+              content: currentMessage,
+            };
+            return updatedMessages;
+          }
+          return prev;
+        });
       }
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
@@ -886,70 +994,35 @@ function ChatInterface() {
     setOpenedDocument("");
   };
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-[#ffffff] text-[#000000] flex flex-col justify-center items-center p-4 relative">
-        {/* Centered Content */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-sm space-y-6"
-        >
-          <h1 className="text-2xl text-center font-semibold">
-            Create an account
-          </h1>
-
-          <div className="space-y-4">
-            <Input
-              id="name"
-              value={newUserName}
-              onChange={(e) => setNewUserName(e.target.value)}
-              placeholder="Name*"
-              className="rounded border border-[#00a587] text-[#000000] placeholder:text-[#15847e] placeholder:font-light focus-visible:ring-0 focus-visible:ring-offset-0"
-              style={{ borderWidth: "1px" }}
-            />
-            <Input
-              id="email"
-              type="email"
-              value={newUserEmail}
-              onChange={(e) => setNewUserEmail(e.target.value)}
-              placeholder="Email address*"
-              className="rounded border border-[#00a587] text-[#000000] placeholder:text-[#15847e] placeholder:font-light focus-visible:ring-0 focus-visible:ring-offset-0"
-              style={{ borderWidth: "1px" }}
-            />
-
-            <Button
-              onClick={handleUserRegistration}
-              disabled={
-                !newUserName.trim() || !newUserEmail.trim() || isRegistering
-              }
-              className="w-full bg-[#15847e] text-[#ffffff] rounded-sm transition-colors hover:bg-[#10655e]"
-            >
-              {isRegistering ? "Loading..." : "Continue"}
-            </Button>
-          </div>
-        </motion.div>
-
-        {/* Top-left logo addition */}
-        <div className="absolute top-3 left-3">
-          <h2 className="text-xl font-semibold">
-            ChatGPT <span className="text-sm font-normal italic">for BRS</span>
-          </h2>
+  // Header component for chat interface
+  const ChatHeader = () => (
+    <div className="sticky top-0 z-10 bg-white border-b border-gray-100 flex justify-between items-center w-full p-4">
+      <div className="flex items-center">
+        <div className="w-8 h-8 relative mr-3">
+          <Image
+            src="/logo.png"
+            alt="FiNAC AI"
+            width={32}
+            height={32}
+            className="object-contain"
+          />
         </div>
+        <h1 className="text-lg font-medium text-[#1A479D]">FiNAC BRS AI</h1>
       </div>
-    );
-  }
+      <div className="text-[#1A479D] text-sm">{formatDate(new Date())}</div>
+    </div>
+  );
 
   return (
     <>
       <SearchParamsHandler onParamsChange={handleSearchParamsChange} />
       {splitView ? (
-        <div className="flex h-screen overflow-hidden bg-black">
+        <div className="flex h-screen overflow-hidden bg-white">
           {leftPaneToRight ? (
             <>
-              {/* Right pane */}
+              {/* Chat pane */}
               <div
-                className="flex screen flex-col bg-[#1E1E1E] text-white overflow-y-auto chat-container"
+                className="flex screen flex-col bg-white text-black overflow-y-auto chat-container"
                 style={{ flexBasis: `${100 - editorWidth}%` }}
               >
                 {!isConversationStarted ? (
@@ -962,10 +1035,11 @@ function ChatInterface() {
                   />
                 ) : (
                   <>
-                    <div className="flex-1 overflow-y-auto">
+                    <ChatHeader />
+                    <div className="flex-1 overflow-y-auto bg-[#F8FAFC]">
                       <AnimatePresence>
                         {messages.map((msg, index) => (
-                          <MessageComponent
+                          <StyledMessageComponent
                             key={msg.id}
                             message={msg}
                             onEdit={handleEditMessage}
@@ -979,57 +1053,54 @@ function ChatInterface() {
                           />
                         ))}
                       </AnimatePresence>
-                      <div ref={messagesEndRef} />
+                      <div ref={messagesEndRef} className="h-32" />
                     </div>
 
-                    <div className="">
-                      <div className="max-w-3xl mx-auto p-4">
-                        <div className="sticky bottom-0 p-4">
-                          <ChatInputBox
-                            message={message}
-                            setMessage={setMessage}
-                            handleSendMessage={handleSendMessage}
-                            handleStopRequest={handleStopRequest}
-                            isStreaming={isStreaming}
-                            commandFilter={commandFilter}
-                            setCommandFilter={setCommandFilter}
-                            selectedButtons={selectedButtons}
-                            setSelectedButtons={setSelectedButtons}
+                    <div className="bg-white border-t border-gray-100 p-4">
+                      <StyledChatInputBox
+                        message={message}
+                        setMessage={setMessage}
+                        handleSendMessage={handleSendMessage}
+                        handleStopRequest={handleStopRequest}
+                        isStreaming={isStreaming}
+                        commandFilter={commandFilter}
+                        setCommandFilter={setCommandFilter}
+                        selectedButtons={selectedButtons}
+                        setSelectedButtons={setSelectedButtons}
+                      />
+                      
+                      {message.startsWith("/") && (
+                        <div className="mt-2">
+                          <CommandMenu
+                            isOpen={true}
+                            onSelect={handleCommandSelect}
+                            filter={commandFilter}
+                            splitView={splitView}
                           />
-
-                          {message.startsWith("/") && (
-                            <CommandMenu
-                              isOpen={true}
-                              onSelect={handleCommandSelect}
-                              filter={commandFilter}
-                              splitView={splitView}
-                            />
-                          )}
                         </div>
-                        <p className="text-xs text-gray-500 mt-2 text-center">
-                          GPT can make mistakes. It is not a bug, it is a
-                          feature.
-                        </p>
-                      </div>
+                      )}
+                      
+                      <p className="text-xs text-gray-400 mt-2 text-center">
+                        Powered by FiNAC AI
+                      </p>
                     </div>
                   </>
                 )}
               </div>
               <div
-                className="w-[4px] transition-colors duration-300 hover:bg-[#555555] bg-black cursor-col-resize"
+                className="w-[4px] transition-colors duration-300 hover:bg-[#1A479D]/20 bg-gray-100 cursor-col-resize"
                 onMouseDown={handleMouseDown}
               />
-              {/* Left pane on right side with left border */}
+              {/* Editor pane */}
               <div
-                className="border-l screen border-black overflow-y-auto"
+                className="border-l screen border-gray-200 overflow-y-auto bg-white"
                 style={{
                   flexBasis: `${editorWidth}%`,
-                  backgroundColor: "#1e1e1e",
                 }}
               >
                 <div>
-                  {/* Document header bar - now using the component */}
-                  <div className="bg-[#2f2f2f] sticky top-0 z-10">
+                  {/* Document header */}
+                  <div className="bg-white sticky top-0 z-10 border-b border-gray-200">
                     <DocumentHeader
                       documentName={openedDocument}
                       onClose={handleDocumentClose}
@@ -1043,9 +1114,9 @@ function ChatInterface() {
 
                   {/* Editor content */}
                   {isFileLoading ? (
-                    <div className="flex flex-col items-center justify-center min-h-screen">
-                      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-gray-900"></div>
-                      <h2 className="text-2xl text-[#fff] font-bold mt-4">
+                    <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+                      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#1A479D]"></div>
+                      <h2 className="text-2xl text-[#1A479D] font-bold mt-4">
                         Loading {openedDocument}
                       </h2>
                       <p className="text-gray-500 mt-2">
@@ -1061,14 +1132,13 @@ function ChatInterface() {
               </div>
             </>
           ) : (
-            // Default layout with left pane on left side.
+            // Default layout with editor on left side, chat on right
             <>
-              {/* Left pane */}
+              {/* Editor pane */}
               <div
-                className="border-r screen border-black overflow-y-auto"
+                className="border-r screen border-gray-200 overflow-y-auto bg-white"
                 style={{
                   flexBasis: `${editorWidth}%`,
-                  backgroundColor: "#1e1e1e",
                 }}
               >
                 <div>
@@ -1103,12 +1173,12 @@ function ChatInterface() {
                 </div>
               </div>
               <div
-                className="w-[4px] hover:bg-[#555555] duration-300 transition-colors bg-black cursor-col-resize"
+                className="w-[4px] hover:bg-[#1A479D]/20 duration-300 transition-colors bg-gray-100 cursor-col-resize"
                 onMouseDown={handleMouseDown}
               />
-              {/* Right pane */}
+              {/* Chat pane */}
               <div
-                className="flex screen flex-col bg-[#1E1E1E] text-white overflow-y-auto chat-container"
+                className="flex screen flex-col bg-white text-black overflow-y-auto chat-container"
                 style={{ flexBasis: `${100 - editorWidth}%` }}
               >
                 {!isConversationStarted ? (
@@ -1178,9 +1248,7 @@ function ChatInterface() {
           )}
         </div>
       ) : (
-        <div className="h-screen chat-container screen text-white flex flex-col overflow-hidden">
-          {" "}
-          {/* The entire chat interface goes here */}
+        <div className="h-screen chat-container screen text-black flex flex-col overflow-hidden bg-white">
           {!isConversationStarted ? (
             <WelcomeScreen
               message={message}
@@ -1191,10 +1259,11 @@ function ChatInterface() {
             />
           ) : (
             <>
-              <div className="flex-1 overflow-y-auto">
+              <ChatHeader />
+              <div className="flex-1 overflow-y-auto bg-[#F8FAFC]">
                 <AnimatePresence>
                   {messages.map((msg, index) => (
-                    <MessageComponent
+                    <StyledMessageComponent
                       key={msg.id}
                       message={msg}
                       onEdit={handleEditMessage}
@@ -1208,37 +1277,36 @@ function ChatInterface() {
                     />
                   ))}
                 </AnimatePresence>
-                <div ref={messagesEndRef} />
+                <div ref={messagesEndRef} className="h-32" />
               </div>
 
-              <div className="">
-                <div className="max-w-5xl mx-auto p-4">
-                  <div className="sticky bottom-0 p-4">
-                    <ChatInputBox
-                      message={message}
-                      setMessage={setMessage}
-                      handleSendMessage={handleSendMessage}
-                      handleStopRequest={handleStopRequest}
-                      isStreaming={isStreaming}
-                      commandFilter={commandFilter}
-                      setCommandFilter={setCommandFilter}
-                      selectedButtons={selectedButtons}
-                      setSelectedButtons={setSelectedButtons}
+              <div className="bg-white border-t border-gray-100 p-4">
+                <StyledChatInputBox
+                  message={message}
+                  setMessage={setMessage}
+                  handleSendMessage={handleSendMessage}
+                  handleStopRequest={handleStopRequest}
+                  isStreaming={isStreaming}
+                  commandFilter={commandFilter}
+                  setCommandFilter={setCommandFilter}
+                  selectedButtons={selectedButtons}
+                  setSelectedButtons={setSelectedButtons}
+                />
+                
+                {message.startsWith("/") && (
+                  <div className="mt-2">
+                    <CommandMenu
+                      isOpen={true}
+                      onSelect={handleCommandSelect}
+                      filter={commandFilter}
+                      splitView={splitView}
                     />
-
-                    {message.startsWith("/") && (
-                      <CommandMenu
-                        isOpen={true}
-                        onSelect={handleCommandSelect}
-                        filter={commandFilter}
-                        splitView={splitView}
-                      />
-                    )}
                   </div>
-                  <p className="text-xs text-gray-500 mt-2 text-center">
-                    GPT can make mistakes. It is not a bug, it is a feature.
-                  </p>
-                </div>
+                )}
+                
+                <p className="text-xs text-gray-400 mt-2 text-center">
+                  Powered by FiNAC AI
+                </p>
               </div>
             </>
           )}
@@ -1250,7 +1318,11 @@ function ChatInterface() {
 
 export default function Page() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-white">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#1A479D]"></div>
+      </div>
+    }>
       <ChatInterface />
     </Suspense>
   );
