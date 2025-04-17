@@ -63,9 +63,15 @@ function WelcomeScreen({
     <div className="flex flex-col min-h-dvh bg-white text-black">
       {/* Top section with date and user icon */}
       <div className="flex justify-between items-center w-full p-6">
-        <div className="text-[#1A479D] text-lg font-medium">{formatDate(new Date())}</div>
+        <div className="text-[#1A479D] text-lg font-medium">
+          {formatDate(new Date())}
+        </div>
         <div className="relative w-12 h-12 border-2 border-[#1A479D] rounded-full overflow-hidden flex items-center justify-center bg-white">
-          <svg viewBox="0 0 24 24" className="w-8 h-8 text-[#1A479D]" fill="currentColor">
+          <svg
+            viewBox="0 0 24 24"
+            className="w-8 h-8 text-[#1A479D]"
+            fill="currentColor"
+          >
             <circle cx="12" cy="7" r="4" />
             <path d="M12 11c-3.866 0-7 3.134-7 7v2h14v-2c0-3.866-3.134-7-7-7z" />
           </svg>
@@ -113,7 +119,7 @@ function WelcomeScreen({
                   }
                 }}
               />
-              <button 
+              <button
                 onClick={handleSendMessage}
                 disabled={isStreaming || !message.trim()}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#1A479D]"
@@ -161,22 +167,32 @@ function StyledMessageComponent({
   onDelete: (id: string) => void;
   onRegenerate: (id: string) => Promise<void>;
 }) {
-  const isUser = message.role === 'user';
-  const isEmpty = !message.content || message.content.trim() === '';
-  
+  const isUser = message.role === "user";
+  const isEmpty = !message.content || message.content.trim() === "";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, height: 0 }}
-      className={`px-4 py-6 flex ${isUser ? 'justify-end' : 'justify-start'}`}
+      className={`px-4 py-6 flex ${isUser ? "justify-end" : "justify-start"}`}
     >
-      <div className={`max-w-3xl ${isUser ? 'order-2' : 'order-1'}`}>
+      <div className={`max-w-3xl ${isUser ? "order-2" : "order-1"}`}>
         {/* Avatar */}
-        <div className={`relative w-8 h-8 ${isUser ? 'ml-3' : 'mr-3'} inline-block align-top`}>
-          <div className={`w-8 h-8 rounded-full border-2 border-[#1A479D] flex items-center justify-center bg-white overflow-hidden`}>
+        <div
+          className={`relative w-8 h-8 ${
+            isUser ? "ml-3" : "mr-3"
+          } inline-block align-top`}
+        >
+          <div
+            className={`w-8 h-8 rounded-full border-2 border-[#1A479D] flex items-center justify-center bg-white overflow-hidden`}
+          >
             {isUser ? (
-              <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#1A479D]" fill="currentColor">
+              <svg
+                viewBox="0 0 24 24"
+                className="w-5 h-5 text-[#1A479D]"
+                fill="currentColor"
+              >
                 <circle cx="12" cy="7" r="4" />
                 <path d="M12 11c-3.866 0-7 3.134-7 7v2h14v-2c0-3.866-3.134-7-7-7z" />
               </svg>
@@ -191,41 +207,41 @@ function StyledMessageComponent({
             )}
           </div>
         </div>
-        
+
         {/* Message content */}
-        <div 
+        <div
           className={`inline-block px-4 py-2 rounded-2xl max-w-[calc(100%-3rem)] ${
-            isUser 
-              ? 'bg-[#EBF2FF] text-[#1A479D] rounded-tr-none' 
-              : 'bg-white border border-gray-200 text-gray-800 rounded-tl-none'
+            isUser
+              ? "bg-[#EBF2FF] text-[#1A479D] rounded-tr-none"
+              : "bg-white border border-gray-200 text-gray-800 rounded-tl-none"
           }`}
         >
           {isEmpty && !streaming ? (
             <span className="italic text-gray-400">
-              {isUser ? "Empty message" : "No response generated. Please try again."}
+              {isUser
+                ? "Empty message"
+                : "No response generated. Please try again."}
             </span>
+          ) : isUser ? (
+            <p>{message.content}</p>
           ) : (
-            isUser ? (
-              <p>{message.content}</p>
-            ) : (
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {message.content || ""}
-              </ReactMarkdown>
-            )
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {message.content || ""}
+            </ReactMarkdown>
           )}
         </div>
-        
+
         {/* Action buttons for assistant messages */}
         {!isUser && !streaming && (
           <div className="mt-2 flex space-x-2 text-xs text-gray-500">
-            <button 
-              onClick={() => onRegenerate(message.id)} 
+            <button
+              onClick={() => onRegenerate(message.id)}
               className="hover:text-[#1A479D] transition-colors"
             >
               Regenerate
             </button>
-            <button 
-              onClick={() => onDelete(message.id)} 
+            <button
+              onClick={() => onDelete(message.id)}
               className="hover:text-[#1A479D] transition-colors"
             >
               Delete
@@ -260,10 +276,7 @@ function StyledChatInputBox({
     search: boolean;
     reason: boolean;
   };
-  setSelectedButtons?: (value: {
-    search: boolean;
-    reason: boolean;
-  }) => void;
+  setSelectedButtons?: (value: { search: boolean; reason: boolean }) => void;
 }) {
   return (
     <div className="w-full max-w-3xl mx-auto bg-white rounded-xl border border-gray-200 shadow-sm">
@@ -285,13 +298,23 @@ function StyledChatInputBox({
             maxHeight: "200px",
           }}
         />
-        
+
         {isStreaming ? (
           <button
             onClick={handleStopRequest}
             className="absolute right-3 bottom-3 text-gray-400 hover:text-[#1A479D] transition-colors"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <rect x="6" y="6" width="12" height="12" rx="2" ry="2" />
             </svg>
           </button>
@@ -300,28 +323,58 @@ function StyledChatInputBox({
             onClick={handleSendMessage}
             disabled={!message.trim()}
             className={`absolute right-3 bottom-3 transition-colors ${
-              message.trim() ? "text-[#1A479D] hover:text-[#0D3B8B]" : "text-gray-300"
+              message.trim()
+                ? "text-[#1A479D] hover:text-[#0D3B8B]"
+                : "text-gray-300"
             }`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="m22 2-7 20-4-9-9-4Z" />
               <path d="M22 2 11 13" />
             </svg>
           </button>
         )}
       </div>
-      
+
       {/* Feature buttons */}
       {setSelectedButtons && selectedButtons && (
         <div className="flex border-t border-gray-100 px-3 py-2 text-sm text-gray-600">
           <button
-            onClick={() => setSelectedButtons({ ...selectedButtons, search: !selectedButtons.search })}
+            onClick={() =>
+              setSelectedButtons({
+                ...selectedButtons,
+                search: !selectedButtons.search,
+              })
+            }
             className={`mr-3 px-3 py-1 rounded-full ${
-              selectedButtons.search ? "bg-[#EBF2FF] text-[#1A479D]" : "hover:bg-gray-100"
+              selectedButtons.search
+                ? "bg-[#EBF2FF] text-[#1A479D]"
+                : "hover:bg-gray-100"
             }`}
           >
             <span className="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="mr-1"
+              >
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.3-4.3" />
               </svg>
@@ -329,13 +382,31 @@ function StyledChatInputBox({
             </span>
           </button>
           <button
-            onClick={() => setSelectedButtons({ ...selectedButtons, reason: !selectedButtons.reason })}
+            onClick={() =>
+              setSelectedButtons({
+                ...selectedButtons,
+                reason: !selectedButtons.reason,
+              })
+            }
             className={`px-3 py-1 rounded-full ${
-              selectedButtons.reason ? "bg-[#EBF2FF] text-[#1A479D]" : "hover:bg-gray-100"
+              selectedButtons.reason
+                ? "bg-[#EBF2FF] text-[#1A479D]"
+                : "hover:bg-gray-100"
             }`}
           >
             <span className="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="mr-1"
+              >
                 <path d="M14 19c3.771 0 5.657 0 6.828-1.172C22 16.657 22 14.771 22 11c0-3.771 0-5.657-1.172-6.828C19.657 3 17.771 3 14 3h-4C6.229 3 4.343 3 3.172 4.172 2 5.343 2 7.229 2 11c0 3.771 0 5.657 1.172 6.828.653.654 1.528.943 2.828 1.07" />
                 <path d="M14 19c-1.236 0-2.598.5-3.841 1.145-1.998 1.037-2.997 1.556-3.489 1.225-.492-.33-.399-1.355-.212-3.404L6.5 17.5" />
                 <path d="M7 8h10" />
@@ -370,7 +441,7 @@ function ChatInterface() {
   const [isDragging, setIsDragging] = useState(false);
   const [user, setUser] = useState<{ name: string; email: string }>({
     name: "FiNAC User",
-    email: "user@finac.com"
+    email: "user@finac.com",
   });
   const [messages, setMessages] = useState<Message[]>([]);
   const [isConversationStarted, setIsConversationStarted] = useState(false);
@@ -669,7 +740,8 @@ function ChatInterface() {
       const reader = response.body?.getReader();
       let currentMessage = "";
       const messageId = Date.now().toString(); // Store ID in a constant
-      let functionCalls: { description: string; status: "loading" | "done" }[] = [];
+      let functionCalls: { description: string; status: "loading" | "done" }[] =
+        [];
 
       // Create initial message container with the same ID that we'll reference later
       setMessages((prev) => [
@@ -683,7 +755,7 @@ function ChatInterface() {
       ]);
 
       // Ensure we start processing after the state has updated
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       while (true) {
         const { done, value } = (await reader?.read()) || {};
@@ -698,7 +770,7 @@ function ChatInterface() {
             const jsonStr = line.replace("data: ", "");
             // Skip empty or clearly invalid JSON strings
             if (!jsonStr.trim()) continue;
-            
+
             const json = JSON.parse(jsonStr);
 
             logVerbose("Stream chunk:", json);
@@ -739,7 +811,9 @@ function ChatInterface() {
                 );
 
                 setMessages((prev) => {
-                  const messageIndex = prev.findIndex(msg => msg.id === messageId);
+                  const messageIndex = prev.findIndex(
+                    (msg) => msg.id === messageId
+                  );
                   if (messageIndex !== -1) {
                     const updatedMessages = [...prev];
                     updatedMessages[messageIndex] = {
@@ -779,7 +853,9 @@ function ChatInterface() {
                   );
 
                   setMessages((prev) => {
-                    const messageIndex = prev.findIndex(msg => msg.id === messageId);
+                    const messageIndex = prev.findIndex(
+                      (msg) => msg.id === messageId
+                    );
                     if (messageIndex !== -1) {
                       const updatedMessages = [...prev];
                       updatedMessages[messageIndex] = {
@@ -824,7 +900,9 @@ function ChatInterface() {
                       : "";
 
                   setMessages((prev) => {
-                    const messageIndex = prev.findIndex(msg => msg.id === messageId);
+                    const messageIndex = prev.findIndex(
+                      (msg) => msg.id === messageId
+                    );
                     if (messageIndex !== -1) {
                       const updatedMessages = [...prev];
                       updatedMessages[messageIndex] = {
@@ -855,7 +933,7 @@ function ChatInterface() {
       // Final update to ensure content is saved properly
       if (currentMessage) {
         setMessages((prev) => {
-          const messageIndex = prev.findIndex(msg => msg.id === messageId);
+          const messageIndex = prev.findIndex((msg) => msg.id === messageId);
           if (messageIndex !== -1) {
             const updatedMessages = [...prev];
             updatedMessages[messageIndex] = {
@@ -1076,7 +1154,7 @@ function ChatInterface() {
                         selectedButtons={selectedButtons}
                         setSelectedButtons={setSelectedButtons}
                       />
-                      
+
                       {message.startsWith("/") && (
                         <div className="mt-2">
                           <CommandMenu
@@ -1087,7 +1165,7 @@ function ChatInterface() {
                           />
                         </div>
                       )}
-                      
+
                       <p className="text-xs text-gray-400 mt-2 text-center">
                         Powered by FiNAC AI
                       </p>
@@ -1300,7 +1378,7 @@ function ChatInterface() {
                   selectedButtons={selectedButtons}
                   setSelectedButtons={setSelectedButtons}
                 />
-                
+
                 {message.startsWith("/") && (
                   <div className="mt-2">
                     <CommandMenu
@@ -1311,7 +1389,7 @@ function ChatInterface() {
                     />
                   </div>
                 )}
-                
+
                 <p className="text-xs text-gray-400 mt-2 text-center">
                   Powered by FiNAC AI
                 </p>
@@ -1326,11 +1404,13 @@ function ChatInterface() {
 
 export default function Page() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-white">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#1A479D]"></div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen bg-white">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#1A479D]"></div>
+        </div>
+      }
+    >
       <ChatInterface />
     </Suspense>
   );
