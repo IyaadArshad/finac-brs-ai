@@ -20,6 +20,7 @@ import { useSearchParams } from "next/navigation";
 import React, { Suspense } from "react";
 import Image from "next/image";
 import { formatDate } from "@/lib/utils";
+import { parseMarkdown } from "@/utils/markdownParser";
 
 declare global {
   interface Window {
@@ -203,7 +204,7 @@ function StyledMessageComponent({
               {isUser ? "Empty message" : "No response generated. Please try again."}
             </span>
           ) : (
-            <div dangerouslySetInnerHTML={{ __html: message.content || '' }} />
+            <div dangerouslySetInnerHTML={{ __html: isUser ? message.content || '' : parseMarkdown(message.content || '') }} />
           )}
         </div>
         
