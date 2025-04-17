@@ -177,40 +177,10 @@ function StyledMessageComponent({
       exit={{ opacity: 0, height: 0 }}
       className={`px-4 py-6 flex ${isUser ? "justify-end" : "justify-start"}`}
     >
-      <div className={`max-w-3xl ${isUser ? "order-2" : "order-1"}`}>
-        {/* Avatar */}
-        <div
-          className={`relative w-8 h-8 ${
-            isUser ? "ml-3" : "mr-3"
-          } inline-block align-top`}
-        >
-          <div
-            className={`w-8 h-8 rounded-full border-2 border-[#1A479D] flex items-center justify-center bg-white overflow-hidden`}
-          >
-            {isUser ? (
-              <svg
-                viewBox="0 0 24 24"
-                className="w-5 h-5 text-[#1A479D]"
-                fill="currentColor"
-              >
-                <circle cx="12" cy="7" r="4" />
-                <path d="M12 11c-3.866 0-7 3.134-7 7v2h14v-2c0-3.866-3.134-7-7-7z" />
-              </svg>
-            ) : (
-              <Image
-                src="/logo.png"
-                alt="FiNAC AI"
-                width={24}
-                height={24}
-                className="object-contain"
-              />
-            )}
-          </div>
-        </div>
-
+      <div className={`max-w-3xl ${isUser ? "order-2 pr-8" : "order-1 pl-8"}`}>
         {/* Message content */}
         <div
-          className={`inline-block px-4 py-2 rounded-2xl max-w-[calc(100%-3rem)] ${
+          className={`inline-block px-4 py-2 rounded-2xl  ${
             isUser
               ? "bg-[#EBF2FF] text-[#1A479D] rounded-tr-none"
               : "bg-white border border-gray-200 text-gray-800 rounded-tl-none"
@@ -233,18 +203,68 @@ function StyledMessageComponent({
 
         {/* Action buttons for assistant messages */}
         {!isUser && !streaming && (
-          <div className="mt-2 flex space-x-2 text-xs text-gray-500">
+          <div className="mt-2 ml-4 flex space-x-2 text-xs text-gray-500">
             <button
               onClick={() => onRegenerate(message.id)}
-              className="hover:text-[#1A479D] transition-colors"
+              className="hover:text-[#1A479D] transition-colors flex items-center"
+              title="Regenerate"
             >
-              Regenerate
+              <Image
+                width={16}
+                className="mr-1"
+                height={16}
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAG2ElEQVR4nO2deahWRRTAfz71uUBqJkWQuVX/VC9pp9JMM1GoaLUyLW2jLKs/okDSiiKjNCqIJNsUsZUg6K8KkjSNbLPFrF6muVRqauXL5/bi4BFuw9zvfsu9312+84MB5fHNnZlz78yZM2fOAcMwDMMoLt2BocCVwP3AQmAZsBJoBf4E2oEO4C/9/2pgCfAG8CgwBTgNaE67M3mkGRgGzAQWA7t0sOMoIrjlwIMqoE5pdzarNAHnA/OBv2MUQFTZBMwDLgK6xNyni4E/gN+1/lxwNDAL+LWOQugIKWuB+4B+MfVtQ6Du9WScY4EXgN1lDlYr8A7wOHATMBw4ARgEHAp0BboBhwPHAKcAo4AbgCeB9/VtLedZ/2rbjq+xj269mWQwsAjYGzEo64CXgInAUTE+/0it8zVge0QbpI1zgSOKKBB5e2cAbSUGYLvO58PrtNjKVzUSeDZi3dqhU5loe4UQyAXADyU6/C0wCeiRYht7A3cBP5Zo58/AOXkWiKivc4D9IR1cAVyqGlZWaFKN6JsS05io453zJpCBwCchnRLtYzzZpgtwG7A5pA8fAQPyIpCxwDZPg/boF3MI+aGPamn7PP0Ri8C5WRfIpBBVVtaQk8kvI519RVBFviyrApkW8ia9pW9a3umneyHfunJr1gTycMgU5WtonukE3BOiqIjhMxMCud3z8F2qQRWVa0Km5jvTFsgEzzS1rUJ9Pa+MUnN/sO/7AmtK3QUy1vOWiObRQuNwhu7kg2PQpi9kXQUy0KPa7gTOpvEY7Xkxt9ZTIGID+tijaVxC43J1CYtE4gKZ43lY0bSpapiehkBGe96EVykW44A1EYNbTUnEhP698xCxjvaiWKxLQBiJCGSGZ+OXZ3NIGEkdJ8d+0uceLslaUkTG6tlHpgWyyKl8Q86stoXiOM8ZeNbPMwrNi44wPjcHs/ToH3DTPFgaeQOYOrM8DglZOgNvKJo8KqCcCBopMdoRhlg1e6bVGOOA43NQIM/boKTrU+V684lHoZESwxxhiH3H7lKkyAOOQGQvYqTIYkcg4jFupEQPzzWyOK8EGBUy1HNZxkiR8Y5AxFvPSBH3IEqukRkpstARyI1pNsaApY5ASrncG3Xga0cgtd5GNWrkF0cgUTeFjITZ4gjksKQf2GCM00AC69WhIhL3hNACtsRL0AlPvFsiMYEkRzfnZReLSCSu53bfBBvYaPRzxlZu+UZii3pyDHIEUtaUZWpvcrQ4AvmqnB9JJDbbGCbDeZ4ABJGY6SQ5bnEEIn4LkZhxsX6XneSSTyRmfk+Odx2BXF7Oj06yA6rEcG9mnVjOj7p7jnDFx9eojQGeOCmyUSyLD82FNHamOAL5oJIfz3R+LPEPjdpYUM2CfhA3EoE4XZujXG2O6xudMT2rkgqaPXE87OSwtrgoruO6BGCoiFecSiRiqFEdLztjKXGBK0ZCf9t1hNrp6ZltRlRTkV3YiYfrPSHNq76FJqke7Epb9cjAr3LG8JG4L30WOVJc3LhmqN2agKAm5jmVfmEqcFnINuEzZ+yeIwaGaFyTYMVXxVFxwZnojNlezdwQC+4ZycYCRgGKO5b8b9WcfZSLzHv/NEjwmTh4xhP+UMIiJhoxbY8mTjH+z+me2DCS7iJ2mj0q3E/6eRoH6KMXnIJjtLoSM3s1u3c3xN/rST0sh7zpjM1+dWxIlCech0qZmvRDc8A0z7g8Vq/cGu4dkr0NvmG80LM1WF6NRbeWHbzrJd+mAQcajTNVi3IjfMeuVUUxxkKN06KDHxRGuwbuSS2isy8Y/7AGifu+2bOIX5d2w6Z6FrNdJTLPFGXNaPP0+24ywkOexu3R3CJF1Kb2evorCY8zxR0hKY/e1vSoeaeXhlXv8ExTknUnk1wbknlGdvSnkm9zSKunX+2abSfTjAnJnyGf+VM5M7X0Bp4OmaK2pKlNVeM2uczTiYM5zCdk3M+rk55nbArpw9I8utd20UBovnVFykqNclpOGtN6noGLBvVpSJv361detx14Uk5ibpqLYFmlnhk9U2yjPHuyx5odLN/Vw1BYL7pqSrlSabLb1HJ8YZ2+miZ1mZ3r8ZsKlp36pSdmQk+Tgep07BriOjxHxPP1y6nZS8NZ2yZrG1xfW98+an7Mz88sQzQOsOti1BFS1ujto9nAzer516J5Tfrq4Vmz/nuw/m2E3umbrb8tN41Ru341Uk/D0V8dx5JKM9RRQVmrbbH4kjqfj1SnZDdRY5Jlh4bAla/JkgyE0FmdJ+4F3tOrX3EJQNaFFZr1QY6jLbBOFXTTNeEK9XxZoMENvlRzxlad99v13636tyW6KE/X264tRdWUDMMwDEP4D02aerjd8SWRAAAAAElFTkSuQmCC"
+                alt="recurring-appointment"
+              />
+              {/* Regenerate */}
             </button>
             <button
               onClick={() => onDelete(message.id)}
-              className="hover:text-[#1A479D] transition-colors"
+              className="hover:text-[#1A479D] transition-colors flex items-center"
+              title="Delete"
             >
-              Delete
+              <Image
+                width={16}
+                height={16}
+                className="mr-1"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAADBElEQVR4nO2dP4vUQBjGH8EqWNhZ6WkhHARsRD+Bjb2Hpd3VShQh1Xb6EYRrLWQ/gY1/sBZBuLUR/9wHEFtBITKwC2HJbTKZycyT954fvF1mNs/8mB1mcrcBhBBCCCGEEEJ08QjAMrBcHyICCwBNpHouIzwyGknhk9GcBSn7AJ5GrqMJZWzqaIL7dmORnYMEg9fMpNxYZEdCICENwWzQDEH+AZcQ5B9kCUH+gZUQgsFsrAi5A+Bjq1YDbny11YaxViNyuLGgoxwQxF3DTmkkh5kgpZEcZoKURnKYCVIayWEmSGkkh5kgpZEcZoKURnKYCVIayRElyGHPps390UIfy54+DhPkoCBGkEVP++MB93Hc08ciQQ4KJIQMCSFDQsiQEDIkhAwJIUNCyJAQMiSEDAkhQ0LIkBAyJIQMCSFDQsiQEDIkhAwJIUNCyJAQMiSEDAkhQ0LIkBAyJIQMCSFDQsiQEDIkhAwJIUNCyLAi5NL6pwB3lbuGHitCzCAhZEgIGRJChoSQISFkSAgZVoXcRjhFjv9ttyikWrepESbjDYDfkeSeWSHVVrs6QMamj6RSLAmpTmlbB8hoS7mFBFgRUvW0rwNkJJVi4UdbqgEZ+qT0yUgmZe5C9gH8HSjE1eNTZLzz6OMTgHNTBZq7EMc9Tyn1iJmxqRMA1zAhFoSMlUInw5IQx31PKV89rv0BYA8JsCRkzEyhmRlWhcSWklSGVSGxpCSX4bg+4MZeR3iV6jKwDhKsKVnWjG0uRP6+bSaqRcKZkmVmtPliWEgB4LPnZz2D4demNhmF+O7A2/UEGbkI4JcxIUWADAopdwH8MyKk8NyB76qQh1zBPADwZ+ZCCgBvI39214FkMm4C+DBTIcUEMiikOG6sX3H9gmAPshywD/GV8R3AwwhH96KDkFPbkKN70UGMI3RJichlAD89vqb2IhyzvJryiaEFrgD4NmJmYMRMcevZ+US5zEo58Tib2iVFMiJIGXNQ2CVFMiJICTm1bUuRDIRxFcD7CM8z3EL/ctea8R+RZgYSZuYb6gAAAABJRU5ErkJggg=="
+                alt="delete-trash"
+              />{" "}
+              {/* Delete */}
+            </button>
+            <button
+              onClick={() => onDelete(message.id)}
+              className="hover:text-[#1A479D] transition-colors flex items-center"
+              title="Delete"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width={16}
+                height={16}
+                className="mr-1"
+              >
+                <g id="Outlined">
+                  <g>
+                    <path d="M18.414,4.414l1.172,1.172L6.172,19H5v-1.172L18.414,4.414 M18.414,2c-0.256,0-0.512,0.098-0.707,0.293L3,17v4h4L21.707,6.293c0.391-0.391,0.391-1.024,0-1.414l-2.586-2.586C18.926,2.098,18.67,2,18.414,2L18.414,2z" />
+                  </g>
+                  <g>
+                    <line
+                      style={{
+                        fill: "none",
+                        stroke: "#000000",
+                        strokeWidth: 2,
+                        strokeMiterlimit: 10,
+                      }}
+                      x1="15"
+                      y1="5"
+                      x2="18.5"
+                      y2="8.5"
+                    />
+                  </g>
+                </g>
+              </svg>{" "}
+              {/* Delete */}
             </button>
           </div>
         )}
