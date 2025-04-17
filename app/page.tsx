@@ -2,11 +2,6 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import Cookies from "js-cookie";
-import gravatarUrl from "gravatar-url";
 import ReactDOMServer from "react-dom/server";
 import { Message } from "@/types/types";
 import { StatusIndicator } from "@/components/indicator";
