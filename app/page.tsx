@@ -57,19 +57,17 @@ function WelcomeScreen({
   return (
     <div className="flex flex-col min-h-dvh bg-white text-black">
       {/* Top section with date and user icon */}
-      <div className="flex justify-between items-center w-full p-6">
-        <div className="text-[#1A479D] text-lg font-medium">
+      <div className="flex justify-between items-center w-full mt-2">
+        <div className="text-[#1A479D] text-lg font-medium ml-2">
           {formatDate(new Date())}
         </div>
-        <div className="relative w-12 h-12 border-2 border-[#1A479D] rounded-full overflow-hidden flex items-center justify-center bg-white">
-          <svg
-            viewBox="0 0 24 24"
-            className="w-8 h-8 text-[#1A479D]"
-            fill="currentColor"
-          >
-            <circle cx="12" cy="7" r="4" />
-            <path d="M12 11c-3.866 0-7 3.134-7 7v2h14v-2c0-3.866-3.134-7-7-7z" />
-          </svg>
+        <div className="relative w-12 h-12 mr-2 border-none border-0 rounded-full overflow-hidden flex items-center justify-center bg-white">
+          <Image
+            width={38}
+            height={38}
+            src="/icons/user-male-circle.png"
+            alt="user-male-circle"
+          />
         </div>
       </div>
 
@@ -79,7 +77,7 @@ function WelcomeScreen({
           {/* Logo */}
           <div className="mb-3 w-32 h-32 relative">
             <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/finac-logo-removebg-aLpR2MPh5KBTtDt9S0tD9MKhOeyle0.png"
+              src="/logo.png"
               alt="FiNAC Logo"
               width={128}
               height={128}
@@ -142,7 +140,11 @@ function WelcomeScreen({
 
       {/* Footer */}
       <footer className="p-4 text-center text-gray-500 text-sm">
-        Powered by FiNAC AI
+        Powered by FiNAC AI. <br />
+        Icons by{" "}
+        <a className="underline" href="https://icons8.com" target="_blank">
+          Icons8
+        </a>
       </footer>
     </div>
   );
@@ -1182,7 +1184,15 @@ function ChatInterface() {
                       )}
 
                       <p className="text-xs text-gray-400 mt-2 text-center">
-                        Powered by FiNAC AI
+                        Powered by FiNAC AI. <br />
+                        Icons by{" "}
+                        <a
+                          className="underline"
+                          href="https://icons8.com"
+                          target="_blank"
+                        >
+                          Icons8
+                        </a>
                       </p>
                     </div>
                   </>
@@ -1406,7 +1416,15 @@ function ChatInterface() {
                 )}
 
                 <p className="text-xs text-gray-400 mt-2 text-center">
-                  Powered by FiNAC AI
+                  Powered by FiNAC AI. <br />
+                  Icons by{" "}
+                  <a
+                    className="underline"
+                    href="https://icons8.com"
+                    target="_blank"
+                  >
+                    Icons8
+                  </a>
                 </p>
               </div>
             </>
