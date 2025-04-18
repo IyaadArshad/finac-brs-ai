@@ -488,27 +488,27 @@ function ChatInterface() {
   >([
     {
       id: "1",
-      title: "Office 365 Installation Issue",
+      title: "Requirements for Feature Deployment Pipeline",
       date: new Date(),
     },
     {
       id: "2",
-      title: "UAE News Updates",
+      title: "GitHub Actions Integration BRS",
       date: new Date(Date.now() - 86400000), // yesterday
     },
     {
       id: "3",
-      title: "Docker Auto Build CI",
+      title: "Automating Code Review Process",
       date: new Date(Date.now() - 86400000 * 2), // 2 days ago
     },
     {
       id: "4",
-      title: "Note Style Confusion",
+      title: "Sprint Release Reconciliation Spec",
       date: new Date(Date.now() - 86400000 * 3),
     },
     {
       id: "5",
-      title: "Bullet Point Capitalization Rule",
+      title: "Bug Tracking System Sync Document",
       date: new Date(Date.now() - 86400000 * 4),
     },
   ]);
