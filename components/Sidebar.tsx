@@ -1,5 +1,10 @@
 import React from "react";
-import { PlusIcon, PanelLeftClose, ChevronRight, FolderIcon } from "lucide-react";
+import {
+  PlusIcon,
+  PanelLeftClose,
+  ChevronRight,
+  FolderIcon,
+} from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn, formatDate } from "@/lib/utils";
 import { NavUser } from "@/components/NavUser";
@@ -40,23 +45,21 @@ export function Sidebar({
   const todayConversations = conversationHistory.filter(
     (item) => new Date(item.date).setHours(0, 0, 0, 0) === todaysDate
   );
-  const last7DaysConversations = conversationHistory.filter(
-    (item) => {
-      const itemDate = new Date(item.date).setHours(0, 0, 0, 0);
-      return itemDate < todaysDate && itemDate >= previous7Days.getTime();
-    }
-  );
-  const last30DaysConversations = conversationHistory.filter(
-    (item) => {
-      const itemDate = new Date(item.date).setHours(0, 0, 0, 0);
-      return itemDate < previous7Days.getTime() && itemDate >= previous30Days.getTime();
-    }
-  );
+  const last7DaysConversations = conversationHistory.filter((item) => {
+    const itemDate = new Date(item.date).setHours(0, 0, 0, 0);
+    return itemDate < todaysDate && itemDate >= previous7Days.getTime();
+  });
+  const last30DaysConversations = conversationHistory.filter((item) => {
+    const itemDate = new Date(item.date).setHours(0, 0, 0, 0);
+    return (
+      itemDate < previous7Days.getTime() && itemDate >= previous30Days.getTime()
+    );
+  });
 
   const myDocuments = [
     { id: "doc1", title: "Product Requirements" },
     { id: "doc2", title: "System Architecture" },
-    { id: "doc3", title: "User Stories" }
+    { id: "doc3", title: "User Stories" },
   ];
 
   return (
@@ -72,7 +75,7 @@ export function Sidebar({
             {formattedDate}
           </div>
         </div>
-        
+
         <div className="p-3">
           <button
             onClick={onNewChat}
@@ -84,10 +87,12 @@ export function Sidebar({
         </div>
 
         <Separator className="my-2 bg-gray-200" />
-        
+
         {/* My Documents Section */}
         <div className="px-3 py-2">
-          <h3 className="text-xs font-medium text-gray-500 px-2 py-1">My Documents</h3>
+          <h3 className="text-xs font-medium text-gray-500 px-2 py-1">
+            My Documents
+          </h3>
           {myDocuments.map((doc) => (
             <button
               key={doc.id}
@@ -100,12 +105,14 @@ export function Sidebar({
         </div>
 
         <Separator className="my-2 bg-gray-200" />
-        
+
         {/* Conversation History Section */}
         <div className="flex-1 overflow-y-auto px-3">
           {todayConversations.length > 0 && (
             <>
-              <h3 className="text-xs font-medium text-gray-500 px-2 py-1">Today</h3>
+              <h3 className="text-xs font-medium text-gray-500 px-2 py-1">
+                Today
+              </h3>
               {todayConversations.map((item) => (
                 <button
                   key={item.id}
@@ -125,7 +132,9 @@ export function Sidebar({
 
           {last7DaysConversations.length > 0 && (
             <>
-              <h3 className="text-xs font-medium text-gray-500 px-2 py-1 mt-2">Previous 7 Days</h3>
+              <h3 className="text-xs font-medium text-gray-500 px-2 py-1 mt-2">
+                Previous 7 Days
+              </h3>
               {last7DaysConversations.map((item) => (
                 <button
                   key={item.id}
@@ -145,7 +154,9 @@ export function Sidebar({
 
           {last30DaysConversations.length > 0 && (
             <>
-              <h3 className="text-xs font-medium text-gray-500 px-2 py-1 mt-2">Previous 30 Days</h3>
+              <h3 className="text-xs font-medium text-gray-500 px-2 py-1 mt-2">
+                Previous 30 Days
+              </h3>
               {last30DaysConversations.map((item) => (
                 <button
                   key={item.id}
@@ -163,19 +174,16 @@ export function Sidebar({
             </>
           )}
         </div>
-        
+
         {/* User section at the bottom */}
         <NavUser />
-        
       </aside>
-      
+
       {/* Collapse/Expand Control */}
-      <div 
+      <div
         className={cn(
           "absolute top-1/2 transform -translate-y-1/2 transition-all duration-300 z-10",
-          isCollapsed 
-            ? "left-0" 
-            : "left-64"
+          isCollapsed ? "left-0" : "left-64"
         )}
       >
         <button
