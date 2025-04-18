@@ -1,7 +1,8 @@
 import React from "react";
-import { PlusIcon, PanelLeftClose } from "lucide-react";
+import { PlusIcon, PanelLeftClose, ChevronRight, FolderIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn, formatDate } from "@/lib/utils";
+import { NavUser } from "@/components/NavUser";
 
 interface ConversationHistoryItem {
   id: string;
@@ -52,99 +53,142 @@ export function Sidebar({
     }
   );
 
+  const myDocuments = [
+    { id: "doc1", title: "Product Requirements" },
+    { id: "doc2", title: "System Architecture" },
+    { id: "doc3", title: "User Stories" }
+  ];
+
   return (
-    <aside
-      className={cn(
-        "h-screen bg-[#F0F4F9] border-r border-gray-200 flex flex-col transition-all duration-300",
-        isCollapsed ? "w-0 overflow-hidden" : "w-64"
-      )}
-    >
-      <div className="p-3">
-        <div className="text-[#1A479D] text-lg font-medium">
-          {formattedDate}
+    <>
+      <aside
+        className={cn(
+          "h-screen bg-[#F0F4F9] border-r border-gray-200 flex flex-col transition-all duration-300 relative",
+          isCollapsed ? "w-0 overflow-hidden" : "w-64"
+        )}
+      >
+        <div className="p-3">
+          <div className="text-[#1A479D] text-lg font-medium">
+            {formattedDate}
+          </div>
         </div>
-      </div>
+        
+        <div className="p-3">
+          <button
+            onClick={onNewChat}
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-lg bg-[#1A479D] hover:bg-[#153A82] text-white transition-colors"
+          >
+            <PlusIcon className="h-5 w-5" />
+            <span>New chat</span>
+          </button>
+        </div>
+
+        <Separator className="my-2 bg-gray-200" />
+        
+        {/* My Documents Section */}
+        <div className="px-3 py-2">
+          <h3 className="text-xs font-medium text-gray-500 px-2 py-1">My Documents</h3>
+          {myDocuments.map((doc) => (
+            <button
+              key={doc.id}
+              className="flex items-center w-full px-3 py-2 rounded-lg hover:bg-gray-100 text-left text-sm transition-colors"
+            >
+              <FolderIcon className="h-4 w-4 mr-2 text-[#1A479D]" />
+              <span className="text-gray-700">{doc.title}</span>
+            </button>
+          ))}
+        </div>
+
+        <Separator className="my-2 bg-gray-200" />
+        
+        {/* Conversation History Section */}
+        <div className="flex-1 overflow-y-auto px-3">
+          {todayConversations.length > 0 && (
+            <>
+              <h3 className="text-xs font-medium text-gray-500 px-2 py-1">Today</h3>
+              {todayConversations.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => onSelectConversation(item.id)}
+                  className={cn(
+                    "flex items-center w-full px-3 py-2 rounded-lg text-left text-sm transition-colors mb-1",
+                    currentConversationId === item.id
+                      ? "bg-[#EBF2FF] text-[#1A479D]"
+                      : "hover:bg-gray-100 text-gray-700"
+                  )}
+                >
+                  {item.title}
+                </button>
+              ))}
+            </>
+          )}
+
+          {last7DaysConversations.length > 0 && (
+            <>
+              <h3 className="text-xs font-medium text-gray-500 px-2 py-1 mt-2">Previous 7 Days</h3>
+              {last7DaysConversations.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => onSelectConversation(item.id)}
+                  className={cn(
+                    "flex items-center w-full px-3 py-2 rounded-lg text-left text-sm transition-colors mb-1",
+                    currentConversationId === item.id
+                      ? "bg-[#EBF2FF] text-[#1A479D]"
+                      : "hover:bg-gray-100 text-gray-700"
+                  )}
+                >
+                  {item.title}
+                </button>
+              ))}
+            </>
+          )}
+
+          {last30DaysConversations.length > 0 && (
+            <>
+              <h3 className="text-xs font-medium text-gray-500 px-2 py-1 mt-2">Previous 30 Days</h3>
+              {last30DaysConversations.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => onSelectConversation(item.id)}
+                  className={cn(
+                    "flex items-center w-full px-3 py-2 rounded-lg text-left text-sm transition-colors mb-1",
+                    currentConversationId === item.id
+                      ? "bg-[#EBF2FF] text-[#1A479D]"
+                      : "hover:bg-gray-100 text-gray-700"
+                  )}
+                >
+                  {item.title}
+                </button>
+              ))}
+            </>
+          )}
+        </div>
+        
+        {/* User section at the bottom */}
+        <NavUser />
+        
+      </aside>
       
-      <div className="p-3">
+      {/* Collapse/Expand Control */}
+      <div 
+        className={cn(
+          "absolute top-1/2 transform -translate-y-1/2 transition-all duration-300 z-10",
+          isCollapsed 
+            ? "left-0" 
+            : "left-64"
+        )}
+      >
         <button
-          onClick={onNewChat}
-          className="flex items-center gap-2 w-full px-3 py-2 rounded-lg bg-[#1A479D] hover:bg-[#153A82] text-white transition-colors"
+          onClick={toggleSidebar}
+          className={cn(
+            "bg-white shadow-md border border-gray-200 rounded-full p-1.5 flex items-center justify-center hover:bg-gray-50 transition-transform",
+            !isCollapsed && "transform rotate-180"
+          )}
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          <PlusIcon className="h-5 w-5" />
-          <span>New chat</span>
+          <ChevronRight className="h-4 w-4 text-gray-500" />
         </button>
       </div>
-
-      <button
-        onClick={toggleSidebar}
-        className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
-      >
-        <PanelLeftClose className="h-5 w-5" />
-      </button>
-
-      <Separator className="my-2 bg-gray-200" />
-      
-      <div className="flex-1 overflow-y-auto px-3">
-        {todayConversations.length > 0 && (
-          <>
-            <h3 className="text-xs font-medium text-gray-500 py-2">Today</h3>
-            {todayConversations.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => onSelectConversation(item.id)}
-                className={cn(
-                  "flex items-center w-full px-3 py-2 rounded-lg text-left text-sm transition-colors mb-1",
-                  currentConversationId === item.id
-                    ? "bg-[#EBF2FF] text-[#1A479D]"
-                    : "hover:bg-gray-100 text-gray-700"
-                )}
-              >
-                {item.title}
-              </button>
-            ))}
-          </>
-        )}
-
-        {last7DaysConversations.length > 0 && (
-          <>
-            <h3 className="text-xs font-medium text-gray-500 py-2">Previous 7 Days</h3>
-            {last7DaysConversations.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => onSelectConversation(item.id)}
-                className={cn(
-                  "flex items-center w-full px-3 py-2 rounded-lg text-left text-sm transition-colors mb-1",
-                  currentConversationId === item.id
-                    ? "bg-[#EBF2FF] text-[#1A479D]"
-                    : "hover:bg-gray-100 text-gray-700"
-                )}
-              >
-                {item.title}
-              </button>
-            ))}
-          </>
-        )}
-
-        {last30DaysConversations.length > 0 && (
-          <>
-            <h3 className="text-xs font-medium text-gray-500 py-2">Previous 30 Days</h3>
-            {last30DaysConversations.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => onSelectConversation(item.id)}
-                className={cn(
-                  "flex items-center w-full px-3 py-2 rounded-lg text-left text-sm transition-colors mb-1",
-                  currentConversationId === item.id
-                    ? "bg-[#EBF2FF] text-[#1A479D]"
-                    : "hover:bg-gray-100 text-gray-700"
-                )}
-              >
-                {item.title}
-              </button>
-            ))}
-          </>
-        )}
-      </div>
-    </aside>
+    </>
   );
 }

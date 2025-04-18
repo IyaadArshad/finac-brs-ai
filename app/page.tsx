@@ -61,7 +61,7 @@ function WelcomeScreen({
       {/* Top section with date and user icon */}
       <div className="flex justify-between items-center w-full mt-2">
         <div className="text-[#1A479D] text-lg font-medium ml-2">
-          {formatDate(new Date())}
+          {/* {formatDate(new Date())} */}
         </div>
         <div className="relative w-12 h-12 mr-2 border-none border-0 rounded-full overflow-hidden flex items-center justify-center bg-white">
           <Image
@@ -458,9 +458,11 @@ function ChatInterface() {
   const [splitView, setSplitView] = useState(false);
   const [editorWidth, setEditorWidth] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
-  const [user, setUser] = useState<{ name: string; email: string }>({
-    name: "FiNAC User",
-    email: "user@finac.com",
+  const [user, setUser] = useState<{ name: string; email: string; avatar: string; isGuest: boolean }>({
+    name: "Guest User",
+    email: "guest@finac.com",
+    avatar: "/icons/user-male-circle.png",
+    isGuest: true
   });
   const [messages, setMessages] = useState<Message[]>([]);
   const [isConversationStarted, setIsConversationStarted] = useState(false);
@@ -1404,6 +1406,7 @@ function ChatInterface() {
             conversationHistory={conversationHistory}
             onNewChat={handleNewChat}
             onSelectConversation={handleSelectConversation}
+            currentConversationId={messages.length > 0 ? conversationHistory[0]?.id : undefined}
           />
 
           <div className="flex-1 h-screen chat-container screen text-black flex flex-col overflow-hidden bg-white">
