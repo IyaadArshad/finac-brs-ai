@@ -137,7 +137,12 @@ export function Sidebar({
                   className="p-2 rounded-lg bg-[#1A479D] hover:bg-[#153A82] text-white transition-colors"
                   aria-label="New draft"
                 >
-                  <Image alt="New conversation icon" width={22} height={22} src="/icons/create.png" />
+                  <Image
+                    alt="New conversation icon"
+                    width={22}
+                    height={22}
+                    src="/icons/create.png"
+                  />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="right">New draft</TooltipContent>
