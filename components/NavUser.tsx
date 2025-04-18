@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   UserCircleIcon,
@@ -6,9 +6,13 @@ import {
   LogOutIcon,
   LogInIcon,
   BarChart2Icon,
-} from "lucide-react";
+} from "lucide-react"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,57 +21,76 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@/components/ui/dropdown-menu"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export function NavUser({
   user = {
     name: "Guest User",
     email: "guest@finac.com",
     avatar: "/icons/user-male-circle.png",
-    isGuest: true,
+    isGuest: true
   },
+  collapsed = false,
 }: {
   user?: {
-    name: string;
-    email: string;
-    avatar: string;
-    isGuest?: boolean;
-  };
+    name: string
+    email: string
+    avatar: string
+    isGuest?: boolean
+  },
+  collapsed?: boolean
 }) {
   return (
-    <div className="mt-auto px-3 py-2 border-t border-gray-200">
+    <div className={collapsed ? 
+      "mt-auto py-2 flex justify-center" : 
+      "mt-auto px-3 py-2 border-t border-gray-200"
+    }>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className="flex items-center w-full p-2 rounded-lg hover:bg-gray-100 transition-colors">
-            <Avatar className="h-8 w-8 mr-3">
-              <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 text-left text-sm leading-tight">
-              <span className="block font-medium truncate">{user.name}</span>
-              <span className="text-xs text-gray-500 truncate">
-                {user.email}
-              </span>
-            </div>
-            <MoreVerticalIcon className="ml-auto size-4 text-gray-500" />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuTrigger asChild>
+                <button className={collapsed ? 
+                  "p-2 rounded-lg hover:bg-gray-100 transition-colors" :
+                  "flex items-center w-full p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                }>
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user.avatar} alt={user.name} />
+                    <AvatarFallback>
+                      {user.name.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  {!collapsed && (
+                    <>
+                      <div className="flex-1 text-left text-sm leading-tight ml-3">
+                        <span className="block font-medium truncate">{user.name}</span>
+                        <span className="text-xs text-gray-500 truncate">
+                          {user.email}
+                        </span>
+                      </div>
+                      <MoreVerticalIcon className="ml-auto size-4 text-gray-500" />
+                    </>
+                  )}
+                </button>
+              </DropdownMenuTrigger>
+            </TooltipTrigger>
+            {collapsed && <TooltipContent side="right">Account</TooltipContent>}
+          </Tooltip>
+        </TooltipProvider>
+        <DropdownMenuContent 
           className="w-56 rounded-lg"
           align="end"
+          side="right"
           sideOffset={8}
         >
           <DropdownMenuLabel className="p-0 font-normal">
             <div className="flex items-center gap-3 px-2 py-1.5 text-left text-sm">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                <AvatarFallback>
+                  {user.name.charAt(0)}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
@@ -112,5 +135,5 @@ export function NavUser({
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  );
+  )
 }
