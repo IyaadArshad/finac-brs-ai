@@ -1,16 +1,15 @@
 import React from "react";
-import { 
-  PlusIcon, 
-  ChevronLeft, 
-  ChevronRight, 
-  FolderIcon, 
-  SearchIcon, 
-  BookIcon 
-} from "lucide-react";
+import { FolderIcon, SearchIcon, BookIcon, FilePlus2Icon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { NavUser } from "@/components/NavUser";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import Image from "next/image";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ConversationHistoryItem {
   id: string;
@@ -45,23 +44,21 @@ export function Sidebar({
   const todayConversations = conversationHistory.filter(
     (item) => new Date(item.date).setHours(0, 0, 0, 0) === todaysDate
   );
-  const last7DaysConversations = conversationHistory.filter(
-    (item) => {
-      const itemDate = new Date(item.date).setHours(0, 0, 0, 0);
-      return itemDate < todaysDate && itemDate >= previous7Days.getTime();
-    }
-  );
-  const last30DaysConversations = conversationHistory.filter(
-    (item) => {
-      const itemDate = new Date(item.date).setHours(0, 0, 0, 0);
-      return itemDate < previous7Days.getTime() && itemDate >= previous30Days.getTime();
-    }
-  );
+  const last7DaysConversations = conversationHistory.filter((item) => {
+    const itemDate = new Date(item.date).setHours(0, 0, 0, 0);
+    return itemDate < todaysDate && itemDate >= previous7Days.getTime();
+  });
+  const last30DaysConversations = conversationHistory.filter((item) => {
+    const itemDate = new Date(item.date).setHours(0, 0, 0, 0);
+    return (
+      itemDate < previous7Days.getTime() && itemDate >= previous30Days.getTime()
+    );
+  });
 
   const recentlyOpenedDocuments = [
     { id: "doc1", title: "Product Requirements" },
     { id: "doc2", title: "System Architecture" },
-    { id: "doc3", title: "User Stories" }
+    { id: "doc3", title: "User Stories" },
   ];
 
   return (
@@ -71,71 +68,85 @@ export function Sidebar({
         isCollapsed ? "w-16" : "w-64"
       )}
     >
-      {/* Top section with collapse, search and new chat button */}
-      <div className={cn(
-        "p-2 flex items-center gap-2", 
-        isCollapsed ? "flex-col" : "flex-row justify-between"
-      )}>
+      {/* Top section: collapse, then search, then new draft (all icons, no text) */}
+      <div
+        className={cn(
+          "p-2 flex items-center gap-2",
+          isCollapsed ? "flex-col" : "flex-row justify-between"
+        )}
+      >
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <button
                 onClick={toggleSidebar}
-                className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
+                className="p-2 rounded-lg hover:cursor-pointer hover:bg-gray-200 transition-colors"
                 aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               >
-                {isCollapsed ? 
-                  <ChevronRight className="h-5 w-5 text-[#1A479D]" /> : 
-                  <ChevronLeft className="h-5 w-5 text-[#1A479D]" />
-                }
+                {isCollapsed ? (
+                  <Image
+                    alt="Sidebar"
+                    width={24}
+                    height={24}
+                    src="/icons/sidebar.png"
+                  />
+                ) : (
+                  <Image
+                    alt="Sidebar"
+                    width={24}
+                    height={24}
+                    src="/icons/sidebar.png"
+                  />
+                )}
               </button>
             </TooltipTrigger>
-            {isCollapsed && (
-              <TooltipContent side="right">
-                {isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              </TooltipContent>
-            )}
+            <TooltipContent side="right">
+              {isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        
-        {!isCollapsed && (
-          <div className="flex-1 mx-1">
-            <div className="relative">
-              <SearchIcon className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search chats"
-                className="w-full py-2 pl-8 pr-3 rounded-lg bg-gray-100 border border-gray-200 text-sm focus:outline-none focus:ring-1 focus:ring-[#1A479D] focus:border-[#1A479D]"
-              />
-            </div>
-          </div>
-        )}
-        
-        {isCollapsed ? (
+        <div
+          className={cn(
+            "flex",
+            isCollapsed ? "flex-col gap-2" : "flex-row gap-2 ml-auto"
+          )}
+        >
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
+                  aria-label="Search chats"
+                >
+                  <Image
+                    alt="Search"
+                    width={24}
+                    height={24}
+                    src="/icons/search.png"
+                  />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right">Search chats</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
                   onClick={onNewChat}
                   className="p-2 rounded-lg bg-[#1A479D] hover:bg-[#153A82] text-white transition-colors"
-                  aria-label="New chat"
+                  aria-label="New draft"
                 >
-                  <PlusIcon className="h-5 w-5" />
+                  <FilePlus2Icon className="h-5 w-5" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="right">New chat</TooltipContent>
+              <TooltipContent side="right">New draft</TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        ) : (
-          <button
-            onClick={onNewChat}
-            className="px-3 py-2 rounded-lg bg-[#1A479D] hover:bg-[#153A82] text-white transition-colors flex items-center"
-          >
-            <PlusIcon className="h-5 w-5 mr-1" />
-            <span className="text-sm">New chat</span>
-          </button>
-        )}
+        </div>
       </div>
+
+      <Separator className="my-2 bg-gray-200" />
 
       {/* Library button */}
       <div className={cn("p-2", isCollapsed ? "flex justify-center" : "")}>
@@ -145,16 +156,23 @@ export function Sidebar({
               <button
                 className={cn(
                   "flex items-center rounded-lg transition-colors",
-                  isCollapsed ? 
-                    "p-2 hover:bg-gray-100" : 
-                    "px-3 py-2 w-full hover:bg-gray-100 text-left"
+                  isCollapsed
+                    ? "p-2 hover:bg-gray-100"
+                    : "px-3 py-2 w-full hover:bg-gray-100 text-left"
                 )}
               >
-                <BookIcon className="h-5 w-5 text-[#1A479D]" />
+                <Image
+                  alt="Library icon"
+                  width={24}
+                  height={24}
+                  src="/icons/folders.png"
+                />
                 {!isCollapsed && <span className="ml-2 text-sm">Library</span>}
               </button>
             </TooltipTrigger>
-            {isCollapsed && <TooltipContent side="right">Library</TooltipContent>}
+            {isCollapsed && (
+              <TooltipContent side="right">Library</TooltipContent>
+            )}
           </Tooltip>
         </TooltipProvider>
       </div>
@@ -162,10 +180,11 @@ export function Sidebar({
       {!isCollapsed && (
         <>
           <Separator className="my-2 bg-gray-200" />
-          
           {/* Recently opened documents Section */}
           <div className="px-3 py-2">
-            <h3 className="text-xs font-medium text-gray-500 px-2 py-1">Recently opened documents</h3>
+            <h3 className="text-xs font-medium text-gray-500 px-2 pb-3 py-1">
+              Recently opened documents
+            </h3>
             {recentlyOpenedDocuments.map((doc) => (
               <button
                 key={doc.id}
@@ -176,14 +195,15 @@ export function Sidebar({
               </button>
             ))}
           </div>
-
           <Separator className="my-2 bg-gray-200" />
-          
           {/* Conversation History Section */}
           <div className="flex-1 overflow-y-auto px-3">
+            {/* Today */}
             {todayConversations.length > 0 && (
               <>
-                <h3 className="text-xs font-medium text-gray-500 px-2 py-1">Today</h3>
+                <h3 className="text-xs font-medium text-gray-500 px-2 pb-3 py-1">
+                  Today
+                </h3>
                 {todayConversations.map((item) => (
                   <button
                     key={item.id}
@@ -200,10 +220,12 @@ export function Sidebar({
                 ))}
               </>
             )}
-
+            {/* Previous 7 Days */}
             {last7DaysConversations.length > 0 && (
               <>
-                <h3 className="text-xs font-medium text-gray-500 px-2 py-1 mt-2">Previous 7 Days</h3>
+                <h3 className="text-xs font-medium text-gray-500 px-2 py-1 pb-3 mt-2">
+                  Previous 7 Days
+                </h3>
                 {last7DaysConversations.map((item) => (
                   <button
                     key={item.id}
@@ -220,10 +242,12 @@ export function Sidebar({
                 ))}
               </>
             )}
-
+            {/* Previous 30 Days */}
             {last30DaysConversations.length > 0 && (
               <>
-                <h3 className="text-xs font-medium text-gray-500 px-2 py-1 mt-2">Previous 30 Days</h3>
+                <h3 className="text-xs font-medium text-gray-500 px-2 py-1 mt-2">
+                  Previous 30 Days
+                </h3>
                 {last30DaysConversations.map((item) => (
                   <button
                     key={item.id}
@@ -243,7 +267,7 @@ export function Sidebar({
           </div>
         </>
       )}
-      
+
       {/* User section at the bottom */}
       <NavUser collapsed={isCollapsed} />
     </aside>
