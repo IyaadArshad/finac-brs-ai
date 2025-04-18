@@ -55,11 +55,11 @@ export function Sidebar({
     );
   });
 
-  const recentlyOpenedDocuments = [
-    { id: "doc1", title: "Product Requirements" },
-    { id: "doc2", title: "System Architecture" },
-    { id: "doc3", title: "User Stories" },
-  ];
+const recentlyOpenedDocuments = [
+    { id: "doc1", title: "Example BRS Document" },
+    { id: "doc2", title: "Payment Processing BRS" },
+    { id: "doc3", title: "API Integration Specification" },
+];
 
   return (
     <aside
