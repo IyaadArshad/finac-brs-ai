@@ -460,7 +460,7 @@ function ChatInterface() {
   const [isDragging, setIsDragging] = useState(false);
   const [user, setUser] = useState<{ name: string; email: string; avatar: string; isGuest: boolean }>({
     name: "Guest User",
-    email: "guest@finac.com",
+    email: "guest@datamation.lk",
     avatar: "/icons/user-male-circle.png",
     isGuest: true
   });

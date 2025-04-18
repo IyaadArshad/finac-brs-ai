@@ -28,7 +28,7 @@ import {
 export function NavUser({
   user = {
     name: "Guest User",
-    email: "guest@finac.com",
+    email: "guest@datamation.lk",
     avatar: "/icons/user-male-circle.png",
     isGuest: true,
   },
