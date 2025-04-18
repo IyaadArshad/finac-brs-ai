@@ -86,15 +86,15 @@ export function Sidebar({
                 {isCollapsed ? (
                   <Image
                     alt="Sidebar"
-                    width={24}
-                    height={24}
+                    width={26}
+                    height={26}
                     src="/icons/sidebar.png"
                   />
                 ) : (
                   <Image
                     alt="Sidebar"
-                    width={24}
-                    height={24}
+                    width={28}
+                    height={28}
                     src="/icons/sidebar.png"
                   />
                 )}
@@ -137,7 +137,7 @@ export function Sidebar({
                   className="p-2 rounded-lg bg-[#1A479D] hover:bg-[#153A82] text-white transition-colors"
                   aria-label="New draft"
                 >
-                  <FilePlus2Icon className="h-5 w-5" />
+                  <Image alt="New conversation icon" width={22} height={22} src="/icons/create.png" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="right">New draft</TooltipContent>
