@@ -11,6 +11,8 @@ import { MessageComponent } from "@/components/home/MessageComponent";
 import { SplitScreenEditor } from "@/components/splitScreenEditor";
 import { DocumentHeader } from "@/components/DocumentHeader";
 import { ChatInputBox } from "@/components/ChatInputBox";
+import { Sidebar } from "@/components/Sidebar";
+import { PanelLeft } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense } from "react";
 import Image from "next/image";
@@ -478,6 +480,71 @@ function ChatInterface() {
     latestVersion: number;
     versions: Record<string, string> | null;
   } | null>(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [conversationHistory, setConversationHistory] = useState<
+    Array<{ id: string; title: string; date: Date }>
+  >([
+    {
+      id: "1",
+      title: "Office 365 Installation Issue",
+      date: new Date(),
+    },
+    {
+      id: "2",
+      title: "UAE News Updates",
+      date: new Date(Date.now() - 86400000), // yesterday
+    },
+    {
+      id: "3",
+      title: "Docker Auto Build CI",
+      date: new Date(Date.now() - 86400000 * 2), // 2 days ago
+    },
+    {
+      id: "4",
+      title: "Note Style Confusion",
+      date: new Date(Date.now() - 86400000 * 3),
+    },
+    {
+      id: "5",
+      title: "Bullet Point Capitalization Rule",
+      date: new Date(Date.now() - 86400000 * 4),
+    },
+  ]);
+
+  useEffect(() => {
+    if (messages.length > 0 && messages[0].role === "user") {
+      const userFirstMessage = messages[0].content;
+      const title =
+        userFirstMessage.length > 25
+          ? userFirstMessage.substring(0, 25) + "..."
+          : userFirstMessage;
+
+      const conversationExists = conversationHistory.some(
+        (conv) => conv.title === title
+      );
+
+      if (!conversationExists && isConversationStarted) {
+        const newConversation = {
+          id: Date.now().toString(),
+          title: title,
+          date: new Date(),
+        };
+
+        setConversationHistory((prev) => [newConversation, ...prev]);
+      }
+    }
+  }, [isConversationStarted, messages]);
+
+  const handleNewChat = () => {
+    setMessages([]);
+    setIsConversationStarted(false);
+    setMessage("");
+  };
+
+  const handleSelectConversation = (id: string) => {
+    handleNewChat();
+    setIsConversationStarted(true);
+  };
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
@@ -520,7 +587,6 @@ function ChatInterface() {
   }, [handleMouseMove]);
 
   const handleCommandSelect = (action: string) => {
-    // Implement the action handling logic here
     console.log(`Selected action: ${action}`);
   };
 
@@ -538,14 +604,11 @@ function ChatInterface() {
     const userInput = message.trim();
     setMessage("");
 
-    // Handle commands without adding them to chat
     if (userInput.startsWith("/")) {
       const commandParts = userInput.split(" ");
       const command = commandParts[0].toLowerCase();
 
       if (command === "/help" || userInput === "/") {
-        // Process help command silently
-        // Only show output for errors (none for help)
         const helpMessage =
           "I can help you with the following commands:\n\n **/help** - Show available commands\n\n**/create** [filename] - Create new document\n\n**/open** [filename] - Open Editor Files\n\n Please make sure you type out **full commands.** The command menu only serves for reference purposes";
 
@@ -618,7 +681,6 @@ function ChatInterface() {
             break;
           }
         } else {
-          // Create file but only show response on error
           const response = await createFile(commandParts[1]);
           if (
             response.includes("Error") ||
@@ -664,7 +726,6 @@ function ChatInterface() {
         return;
       }
 
-      // If we get here, it's an unrecognized command - show error
       setMessages((prev) => [
         ...prev,
         {
@@ -678,7 +739,6 @@ function ChatInterface() {
       return;
     }
 
-    // For non-command messages, maintain existing behavior
     const newMessage: Message = {
       id: Date.now().toString(),
       content: userInput,
@@ -711,7 +771,6 @@ function ChatInterface() {
       }
     );
 
-    // Combine extracted function call text with remaining content
     return (functionCallText + content).trim();
   }
 
@@ -724,7 +783,6 @@ function ChatInterface() {
         content: stripFunctionCallDivs(msg.content),
       }));
 
-      // Dynamically choose API endpoint based on button selections
       const endpoint = selectedButtons.reason
         ? "/api/v2/completionReason"
         : selectedButtons.search
@@ -756,22 +814,20 @@ function ChatInterface() {
 
       const reader = response.body?.getReader();
       let currentMessage = "";
-      const messageId = Date.now().toString(); // Store ID in a constant
+      const messageId = Date.now().toString();
       let functionCalls: { description: string; status: "loading" | "done" }[] =
         [];
 
-      // Create initial message container with the same ID that we'll reference later
       setMessages((prev) => [
         ...prev,
         {
-          id: messageId, // Use the stored ID
+          id: messageId,
           content: "",
           role: "assistant",
           timestamp: Date.now(),
         },
       ]);
 
-      // Ensure we start processing after the state has updated
       await new Promise((resolve) => setTimeout(resolve, 0));
 
       while (true) {
@@ -785,7 +841,6 @@ function ChatInterface() {
           if (!line.startsWith("data: ")) continue;
           try {
             const jsonStr = line.replace("data: ", "");
-            // Skip empty or clearly invalid JSON strings
             if (!jsonStr.trim()) continue;
 
             const json = JSON.parse(jsonStr);
@@ -805,7 +860,6 @@ function ChatInterface() {
                   status: "loading",
                 });
 
-                // Instead of filtering out search function calls, render them normally
                 const indicatorsHTML = ReactDOMServer.renderToString(
                   <div className="flex flex-col gap-2">
                     {functionCalls.map((call, index) => (
@@ -845,11 +899,9 @@ function ChatInterface() {
               }
 
               case "functionResult": {
-                // Update the status of the latest function call to "done"
                 if (functionCalls.length > 0) {
                   functionCalls[functionCalls.length - 1].status = "done";
 
-                  // Re-render all indicators with updated status
                   const indicatorsHTML = ReactDOMServer.renderToString(
                     <div className="flex flex-col gap-2">
                       {functionCalls.map((call, index) => (
@@ -888,7 +940,6 @@ function ChatInterface() {
               }
 
               case "message": {
-                // Keep indicators visible while streaming message content
                 const newWords = json.content.split(" ");
                 for (let word of newWords) {
                   currentMessage += (currentMessage ? " " : "") + word;
@@ -947,7 +998,6 @@ function ChatInterface() {
         }
       }
 
-      // Final update to ensure content is saved properly
       if (currentMessage) {
         setMessages((prev) => {
           const messageIndex = prev.findIndex((msg) => msg.id === messageId);
@@ -1014,11 +1064,9 @@ function ChatInterface() {
   };
 
   const handleRegenerateMessage = async (id: string): Promise<void> => {
-    // Find the index of the message to regenerate
     const index = messages.findIndex((msg) => msg.id === id);
     if (index === -1) return;
 
-    // Find the preceding user message
     let userMessageIndex = index - 1;
     while (
       userMessageIndex >= 0 &&
@@ -1028,9 +1076,7 @@ function ChatInterface() {
     }
 
     if (userMessageIndex >= 0) {
-      // Remove all messages after the user message
       setMessages((prev) => prev.slice(0, userMessageIndex + 1));
-      // Regenerate the response based on the user message
       await fetchAIResponse(messages[userMessageIndex]);
     }
   };
@@ -1038,29 +1084,24 @@ function ChatInterface() {
   useEffect(() => {
     if (splitView && openedDocument) {
       setIsFileLoading(true);
-      // Use the new rawFetch endpoint
       fetch(`/api/v3/editor/rawFetch?file_name=${openedDocument}`)
         .then((res) => res.json())
         .then((response) => {
           if (response.success && response.data) {
             const { data } = response;
 
-            // Check if data has versions
             if (data.data && data.data.versions && data.data.latestVersion) {
               const latestVersion = data.data.latestVersion;
               const versions = data.data.versions;
 
-              // Set the file content to the latest version
               setFileContent(versions[latestVersion.toString()] || "");
 
-              // Store version data for navigation
               setVersionData({
                 currentVersion: latestVersion,
                 latestVersion: latestVersion,
                 versions: versions,
               });
             } else {
-              // Fallback to legacy behavior for files without versioning
               setFileContent(data.content || "");
               setVersionData(null);
             }
@@ -1078,7 +1119,6 @@ function ChatInterface() {
     }
   }, [openedDocument, splitView]);
 
-  // Handle version selection
   const handleSelectVersion = (version: number) => {
     if (
       versionData &&
@@ -1097,10 +1137,17 @@ function ChatInterface() {
     setOpenedDocument("");
   };
 
-  // Header component for chat interface
   const ChatHeader = () => (
     <div className="sticky top-0 z-10 bg-white border-b border-gray-100 flex justify-between items-center w-full p-4">
       <div className="flex items-center">
+        {isSidebarCollapsed && (
+          <button
+            onClick={() => setIsSidebarCollapsed(false)}
+            className="mr-3 hover:bg-gray-100 p-1 rounded-md transition-colors"
+          >
+            <PanelLeft className="h-5 w-5 text-[#1A479D]" />
+          </button>
+        )}
         <div className="w-8 h-8 relative mr-3">
           <Image
             src="/logo.png"
@@ -1112,7 +1159,7 @@ function ChatInterface() {
         </div>
         <h1 className="text-lg font-medium text-[#1A479D]">FiNAC BRS AI</h1>
       </div>
-      <div className="text-[#1A479D] text-sm">{formatDate(new Date())}</div>
+      <div className="text-[#1A479D] text-sm"></div>
     </div>
   );
 
@@ -1123,7 +1170,6 @@ function ChatInterface() {
         <div className="flex h-screen overflow-hidden bg-white">
           {leftPaneToRight ? (
             <>
-              {/* Chat pane */}
               <div
                 className="flex screen flex-col bg-white text-black overflow-y-auto chat-container"
                 style={{ flexBasis: `${100 - editorWidth}%` }}
@@ -1202,7 +1248,6 @@ function ChatInterface() {
                 className="w-[4px] transition-colors duration-300 hover:bg-[#1A479D]/20 bg-gray-100 cursor-col-resize"
                 onMouseDown={handleMouseDown}
               />
-              {/* Editor pane */}
               <div
                 className="border-l screen border-gray-200 overflow-y-auto bg-white"
                 style={{
@@ -1210,7 +1255,6 @@ function ChatInterface() {
                 }}
               >
                 <div>
-                  {/* Document header */}
                   <div className="bg-white sticky top-0 z-10 border-b border-gray-200">
                     <DocumentHeader
                       documentName={openedDocument}
@@ -1223,7 +1267,6 @@ function ChatInterface() {
                     />
                   </div>
 
-                  {/* Editor content */}
                   {isFileLoading ? (
                     <div className="flex flex-col items-center justify-center min-h-screen bg-white">
                       <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#1A479D]"></div>
@@ -1243,9 +1286,7 @@ function ChatInterface() {
               </div>
             </>
           ) : (
-            // Default layout with editor on left side, chat on right
             <>
-              {/* Editor pane */}
               <div
                 className="border-r screen border-gray-200 overflow-y-auto bg-white"
                 style={{
@@ -1253,7 +1294,6 @@ function ChatInterface() {
                 }}
               >
                 <div>
-                  {/* Document header bar - now using the component */}
                   <div className="bg-[#2f2f2f] sticky top-0 z-10">
                     <DocumentHeader
                       documentName={openedDocument}
@@ -1265,7 +1305,6 @@ function ChatInterface() {
                       onSelectVersion={handleSelectVersion}
                     />
                   </div>
-                  {/* Editor content */}
                   {isFileLoading ? (
                     <div className="flex flex-col items-center justify-center min-h-screen">
                       <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-gray-900"></div>
@@ -1287,7 +1326,6 @@ function ChatInterface() {
                 className="w-[4px] hover:bg-[#1A479D]/20 duration-300 transition-colors bg-gray-100 cursor-col-resize"
                 onMouseDown={handleMouseDown}
               />
-              {/* Chat pane */}
               <div
                 className="flex screen flex-col bg-white text-black overflow-y-auto chat-container"
                 style={{ flexBasis: `${100 - editorWidth}%` }}
@@ -1359,76 +1397,86 @@ function ChatInterface() {
           )}
         </div>
       ) : (
-        <div className="h-screen chat-container screen text-black flex flex-col overflow-hidden bg-white">
-          {!isConversationStarted ? (
-            <WelcomeScreen
-              message={message}
-              setMessage={setMessage}
-              handleSendMessage={handleSendMessage}
-              handleStopRequest={handleStopRequest}
-              isStreaming={isStreaming}
-            />
-          ) : (
-            <>
-              <ChatHeader />
-              <div className="flex-1 overflow-y-auto bg-[#F8FAFC]">
-                <AnimatePresence>
-                  {messages.map((msg, index) => (
-                    <StyledMessageComponent
-                      key={msg.id}
-                      message={msg}
-                      onEdit={handleEditMessage}
-                      onDelete={handleDeleteMessage}
-                      onRegenerate={handleRegenerateMessage}
-                      streaming={
-                        isStreaming &&
-                        msg.role === "assistant" &&
-                        index === messages.length - 1
-                      }
-                    />
-                  ))}
-                </AnimatePresence>
-                <div ref={messagesEndRef} className="h-32" />
-              </div>
+        <div className="flex h-screen overflow-hidden bg-white">
+          <Sidebar
+            isCollapsed={isSidebarCollapsed}
+            toggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            conversationHistory={conversationHistory}
+            onNewChat={handleNewChat}
+            onSelectConversation={handleSelectConversation}
+          />
 
-              <div className="bg-white border-t border-gray-100 p-4">
-                <StyledChatInputBox
-                  message={message}
-                  setMessage={setMessage}
-                  handleSendMessage={handleSendMessage}
-                  handleStopRequest={handleStopRequest}
-                  isStreaming={isStreaming}
-                  commandFilter={commandFilter}
-                  setCommandFilter={setCommandFilter}
-                  selectedButtons={selectedButtons}
-                  setSelectedButtons={setSelectedButtons}
-                />
+          <div className="flex-1 h-screen chat-container screen text-black flex flex-col overflow-hidden bg-white">
+            {!isConversationStarted ? (
+              <WelcomeScreen
+                message={message}
+                setMessage={setMessage}
+                handleSendMessage={handleSendMessage}
+                handleStopRequest={handleStopRequest}
+                isStreaming={isStreaming}
+              />
+            ) : (
+              <>
+                <ChatHeader />
+                <div className="flex-1 overflow-y-auto bg-[#F8FAFC]">
+                  <AnimatePresence>
+                    {messages.map((msg, index) => (
+                      <StyledMessageComponent
+                        key={msg.id}
+                        message={msg}
+                        onEdit={handleEditMessage}
+                        onDelete={handleDeleteMessage}
+                        onRegenerate={handleRegenerateMessage}
+                        streaming={
+                          isStreaming &&
+                          msg.role === "assistant" &&
+                          index === messages.length - 1
+                        }
+                      />
+                    ))}
+                  </AnimatePresence>
+                  <div ref={messagesEndRef} className="h-32" />
+                </div>
 
-                {message.startsWith("/") && (
-                  <div className="mt-2">
-                    <CommandMenu
-                      isOpen={true}
-                      onSelect={handleCommandSelect}
-                      filter={commandFilter}
-                      splitView={splitView}
-                    />
-                  </div>
-                )}
+                <div className="bg-white border-t border-gray-100 p-4">
+                  <StyledChatInputBox
+                    message={message}
+                    setMessage={setMessage}
+                    handleSendMessage={handleSendMessage}
+                    handleStopRequest={handleStopRequest}
+                    isStreaming={isStreaming}
+                    commandFilter={commandFilter}
+                    setCommandFilter={setCommandFilter}
+                    selectedButtons={selectedButtons}
+                    setSelectedButtons={setSelectedButtons}
+                  />
 
-                <p className="text-xs text-gray-400 mt-2 text-center">
-                  Powered by FiNAC AI. <br />
-                  Icons by{" "}
-                  <a
-                    className="underline"
-                    href="https://icons8.com"
-                    target="_blank"
-                  >
-                    Icons8
-                  </a>
-                </p>
-              </div>
-            </>
-          )}
+                  {message.startsWith("/") && (
+                    <div className="mt-2">
+                      <CommandMenu
+                        isOpen={true}
+                        onSelect={handleCommandSelect}
+                        filter={commandFilter}
+                        splitView={splitView}
+                      />
+                    </div>
+                  )}
+
+                  <p className="text-xs text-gray-400 mt-2 text-center">
+                    Powered by FiNAC AI. <br />
+                    Icons by{" "}
+                    <a
+                      className="underline"
+                      href="https://icons8.com"
+                      target="_blank"
+                    >
+                      Icons8
+                    </a>
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
     </>
