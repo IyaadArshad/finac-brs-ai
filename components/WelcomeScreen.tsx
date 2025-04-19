@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import { formatDate } from "@/lib/utils";
 
 interface WelcomeScreenProps {
   message: string;
@@ -45,7 +44,7 @@ export function WelcomeScreen({
           </p>
 
           {/* Input box */}
-          <div className="w-full mb-8">
+          <div className="w-5/5 hover:w-5/4 focus-within:w-5/4 transition-all duration-300 mb-8">
             <div className="relative">
               <input
                 type="text"
@@ -75,7 +74,6 @@ export function WelcomeScreen({
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="lucide lucide-send"
                 >
                   <path d="m22 2-7 20-4-9-9-4Z" />
                   <path d="M22 2 11 13" />

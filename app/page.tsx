@@ -17,8 +17,7 @@ import { useSearchParams } from "next/navigation";
 import React, { Suspense } from "react";
 import Image from "next/image";
 import { formatDate } from "@/lib/utils";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { WelcomeScreen } from "@/components/WelcomeScreen";
 
 declare global {
   interface Window {
@@ -40,404 +39,6 @@ function SearchParamsHandler({
   }, [searchParams, onParamsChange]);
 
   return null;
-}
-
-// New WelcomeScreen component
-function WelcomeScreen({
-  message,
-  setMessage,
-  handleSendMessage,
-  handleStopRequest,
-  isStreaming,
-}: {
-  message: string;
-  setMessage: (value: string) => void;
-  handleSendMessage: () => void;
-  handleStopRequest: () => void;
-  isStreaming: boolean;
-}) {
-  return (
-    <div className="flex flex-col min-h-dvh bg-white text-black">
-      {/* Top section with date and user icon */}
-      <div className="flex justify-between items-center w-full mt-2">
-        <div className="text-[#1A479D] text-lg font-medium ml-2">
-          {/* {formatDate(new Date())} */}
-        </div>
-        <div className="relative w-12 h-12 mr-2 border-none border-0 rounded-full overflow-hidden flex items-center justify-center bg-white">
-          <Image
-            width={38}
-            height={38}
-            src="/icons/user-male-circle.png"
-            alt="user-male-circle"
-          />
-        </div>
-      </div>
-
-      {/* Main content - centered vertically */}
-      <main className="flex-1 flex flex-col items-center justify-center">
-        <div className="w-full max-w-2xl flex flex-col items-center px-4">
-          {/* Logo */}
-          <div className="mb-3 w-32 h-32 relative">
-            <Image
-              src="/logo.png"
-              alt="FiNAC Logo"
-              width={128}
-              height={128}
-              style={{ objectFit: "contain" }}
-              priority
-            />
-          </div>
-
-          {/* Welcome text */}
-          <h1 className="text-4xl font-semibold mb-1 text-center">
-            <span className="text-[#1A479D] font-bold">FiNAC BRS AI</span>{" "}
-            Welcomes You
-          </h1>
-
-          <p className="text-gray-500 mb-6 text-md text-center">
-            Type a message to start your BRS generation process
-          </p>
-
-          {/* Input box */}
-          <div className="w-full mb-8">
-            <div className="relative">
-              <input
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Type something great here..."
-                className="w-full p-4 border border-gray-300 rounded-full focus:outline-none focus:ring-0 focus:ring-[#1A479D] focus:border-[#1A479D] hover:border-[#1A479D] transition-colors"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSendMessage();
-                  }
-                }}
-              />
-              <button
-                onClick={handleSendMessage}
-                disabled={isStreaming || !message.trim()}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 mr-1 hover:cursor-pointer text-gray-400 hover:text-[#1A479D]"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-send"
-                >
-                  <path d="m22 2-7 20-4-9-9-4Z" />
-                  <path d="M22 2 11 13" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="p-4 text-center text-gray-500 text-sm">
-        Powered by FiNAC AI. <br />
-        Icons by{" "}
-        <a className="underline" href="https://icons8.com" target="_blank">
-          Icons8
-        </a>
-      </footer>
-    </div>
-  );
-}
-
-// New styled message component to match the theme
-function StyledMessageComponent({
-  message,
-  streaming,
-  onEdit,
-  onDelete,
-  onRegenerate,
-}: {
-  message: Message;
-  streaming?: boolean;
-  onEdit: (id: string, content: string) => void;
-  onDelete: (id: string) => void;
-  onRegenerate: (id: string) => Promise<void>;
-}) {
-  const isUser = message.role === "user";
-  const isEmpty = !message.content || message.content.trim() === "";
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, height: 0 }}
-      className={`px-4 py-6 flex ${isUser ? "justify-end" : "justify-start"}`}
-    >
-      <div className={`max-w-3xl ${isUser ? "order-2 pr-8" : "order-1 pl-8"}`}>
-        {/* Message content */}
-        <div
-          className={`inline-block px-4 py-2 rounded-2xl  ${
-            isUser
-              ? "bg-[#EBF2FF] text-[#1A479D] rounded-tr-none"
-              : "bg-white border border-gray-200 text-gray-800 rounded-tl-none"
-          }`}
-        >
-          {isEmpty && !streaming ? (
-            <span className="italic text-gray-400">
-              {isUser
-                ? "Empty message"
-                : "No response generated. Please try again."}
-            </span>
-          ) : isUser ? (
-            <p>{message.content}</p>
-          ) : (
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {message.content || ""}
-            </ReactMarkdown>
-          )}
-        </div>
-
-        {/* Action buttons for assistant messages */}
-        {!isUser && !streaming && (
-          <div className="mt-2 ml-4 flex space-x-2 text-xs text-gray-500">
-            <button
-              onClick={() => onRegenerate(message.id)}
-              className="hover:text-[#1A479D] transition-colors flex items-center"
-              title="Regenerate"
-            >
-              <Image
-                width={16}
-                className="mr-1"
-                height={16}
-                src="data:image/png;base64,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"
-                alt="recurring-appointment"
-              />
-              {/* Regenerate */}
-            </button>
-            <button
-              onClick={() => onDelete(message.id)}
-              className="hover:text-[#1A479D] transition-colors flex items-center"
-              title="Delete"
-            >
-              <Image
-                width={16}
-                height={16}
-                className="mr-1"
-                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAADBElEQVR4nO2dP4vUQBjGH8EqWNhZ6WkhHARsRD+Bjb2Hpd3VShQh1Xb6EYRrLWQ/gY1/sBZBuLUR/9wHEFtBITKwC2HJbTKZycyT954fvF1mNs/8mB1mcrcBhBBCCCGEEEJ08QjAMrBcHyICCwBNpHouIzwyGknhk9GcBSn7AJ5GrqMJZWzqaIL7dmORnYMEg9fMpNxYZEdCICENwWzQDEH+AZcQ5B9kCUH+gZUQgsFsrAi5A+Bjq1YDbny11YaxViNyuLGgoxwQxF3DTmkkh5kgpZEcZoKURnKYCVIayWEmSGkkh5kgpZEcZoKURnKYCVIayRElyGHPps390UIfy54+DhPkoCBGkEVP++MB93Hc08ciQQ4KJIQMCSFDQsiQEDIkhAwJIUNCyJAQMiSEDAkhQ0LIkBAyJIQMCSFDQsiQEDIkhAwJIUNCyJAQMiSEDAkhQ0LIkBAyJIQMCSFDQsiQEDIkhAwJIUNCyLAi5NL6pwB3lbuGHitCzCAhZEgIGRJChoSQISFkSAgZVoXcRjhFjv9ttyikWrepESbjDYDfkeSeWSHVVrs6QMamj6RSLAmpTmlbB8hoS7mFBFgRUvW0rwNkJJVi4UdbqgEZ+qT0yUgmZe5C9gH8HSjE1eNTZLzz6OMTgHNTBZq7EMc9Tyn1iJmxqRMA1zAhFoSMlUInw5IQx31PKV89rv0BYA8JsCRkzEyhmRlWhcSWklSGVSGxpCSX4bg+4MZeR3iV6jKwDhKsKVnWjG0uRP6+bSaqRcKZkmVmtPliWEgB4LPnZz2D4demNhmF+O7A2/UEGbkI4JcxIUWADAopdwH8MyKk8NyB76qQh1zBPADwZ+ZCCgBvI39214FkMm4C+DBTIcUEMiikOG6sX3H9gmAPshywD/GV8R3AwwhH96KDkFPbkKN70UGMI3RJichlAD89vqb2IhyzvJryiaEFrgD4NmJmYMRMcevZ+US5zEo58Tib2iVFMiJIGXNQ2CVFMiJICTm1bUuRDIRxFcD7CM8z3EL/ctea8R+RZgYSZuYb6gAAAABJRU5ErkJggg=="
-                alt="delete-trash"
-              />{" "}
-              {/* Delete */}
-            </button>
-            <button
-              onClick={() => onDelete(message.id)}
-              className="hover:text-[#1A479D] transition-colors flex items-center"
-              title="Delete"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width={16}
-                height={16}
-                className="mr-1"
-              >
-                <g id="Outlined">
-                  <g>
-                    <path d="M18.414,4.414l1.172,1.172L6.172,19H5v-1.172L18.414,4.414 M18.414,2c-0.256,0-0.512,0.098-0.707,0.293L3,17v4h4L21.707,6.293c0.391-0.391,0.391-1.024,0-1.414l-2.586-2.586C18.926,2.098,18.67,2,18.414,2L18.414,2z" />
-                  </g>
-                  <g>
-                    <line
-                      style={{
-                        fill: "none",
-                        stroke: "#000000",
-                        strokeWidth: 2,
-                        strokeMiterlimit: 10,
-                      }}
-                      x1="15"
-                      y1="5"
-                      x2="18.5"
-                      y2="8.5"
-                    />
-                  </g>
-                </g>
-              </svg>{" "}
-              {/* Delete */}
-            </button>
-          </div>
-        )}
-      </div>
-    </motion.div>
-  );
-}
-
-// Styled chat input box for conversation
-function StyledChatInputBox({
-  message,
-  setMessage,
-  handleSendMessage,
-  handleStopRequest,
-  isStreaming,
-  commandFilter,
-  setCommandFilter,
-  selectedButtons,
-  setSelectedButtons,
-}: {
-  message: string;
-  setMessage: (value: string) => void;
-  handleSendMessage: () => void;
-  handleStopRequest: () => void;
-  isStreaming: boolean;
-  commandFilter?: string;
-  setCommandFilter?: (value: string) => void;
-  selectedButtons?: {
-    search: boolean;
-    reason: boolean;
-  };
-  setSelectedButtons?: (value: { search: boolean; reason: boolean }) => void;
-}) {
-  return (
-    <div className="w-full max-w-3xl mx-auto bg-white rounded-xl border border-gray-200 shadow-sm">
-      <div className="relative">
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSendMessage();
-            }
-          }}
-          placeholder="Type something great here..."
-          className="w-full p-4 pr-12 bg-transparent text-gray-800 focus:outline-none resize-none rounded-xl"
-          rows={1}
-          style={{
-            minHeight: "56px",
-            maxHeight: "200px",
-          }}
-        />
-
-        {isStreaming ? (
-          <button
-            onClick={handleStopRequest}
-            className="absolute right-3 bottom-3 text-gray-400 hover:text-[#1A479D] transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect x="6" y="6" width="12" height="12" rx="2" ry="2" />
-            </svg>
-          </button>
-        ) : (
-          <button
-            onClick={handleSendMessage}
-            disabled={!message.trim()}
-            className={`absolute right-3 bottom-3 transition-colors ${
-              message.trim()
-                ? "text-[#1A479D] hover:text-[#0D3B8B]"
-                : "text-gray-300"
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="m22 2-7 20-4-9-9-4Z" />
-              <path d="M22 2 11 13" />
-            </svg>
-          </button>
-        )}
-      </div>
-
-      {/* Feature buttons */}
-      {setSelectedButtons && selectedButtons && (
-        <div className="flex border-t border-gray-100 px-3 py-2 text-sm text-gray-600">
-          <button
-            onClick={() =>
-              setSelectedButtons({
-                ...selectedButtons,
-                search: !selectedButtons.search,
-              })
-            }
-            className={`mr-3 px-3 py-1 rounded-full ${
-              selectedButtons.search
-                ? "bg-[#EBF2FF] text-[#1A479D]"
-                : "hover:bg-gray-100"
-            }`}
-          >
-            <span className="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-1"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.3-4.3" />
-              </svg>
-              Search
-            </span>
-          </button>
-          <button
-            onClick={() =>
-              setSelectedButtons({
-                ...selectedButtons,
-                reason: !selectedButtons.reason,
-              })
-            }
-            className={`px-3 py-1 rounded-full ${
-              selectedButtons.reason
-                ? "bg-[#EBF2FF] text-[#1A479D]"
-                : "hover:bg-gray-100"
-            }`}
-          >
-            <span className="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-1"
-              >
-                <path d="M14 19c3.771 0 5.657 0 6.828-1.172C22 16.657 22 14.771 22 11c0-3.771 0-5.657-1.172-6.828C19.657 3 17.771 3 14 3h-4C6.229 3 4.343 3 3.172 4.172 2 5.343 2 7.229 2 11c0 3.771 0 5.657 1.172 6.828.653.654 1.528.943 2.828 1.07" />
-                <path d="M14 19c-1.236 0-2.598.5-3.841 1.145-1.998 1.037-2.997 1.556-3.489 1.225-.492-.33-.399-1.355-.212-3.404L6.5 17.5" />
-                <path d="M7 8h10" />
-                <path d="M7 12h6" />
-              </svg>
-              Reason
-            </span>
-          </button>
-        </div>
-      )}
-    </div>
-  );
 }
 
 function ChatInterface() {
@@ -1140,7 +741,7 @@ function ChatInterface() {
   };
 
   const ChatHeader = () => (
-    <div className="sticky top-0 z-10 bg-white border-b border-gray-100 flex justify-between items-center w-full p-4">
+    <div className="sticky top-0 z-10 bg-white border-b border-gray-100 flex justify-between items-center w-full p-4 shadow-sm">
       <div className="flex items-center">
         {isSidebarCollapsed && (
           <button
@@ -1161,7 +762,6 @@ function ChatInterface() {
         </div>
         <h1 className="text-lg font-medium text-[#1A479D]">FiNAC BRS AI</h1>
       </div>
-      <div className="text-[#1A479D] text-sm"></div>
     </div>
   );
 
@@ -1185,12 +785,17 @@ function ChatInterface() {
                     isStreaming={isStreaming}
                   />
                 ) : (
-                  <>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex flex-col h-full"
+                  >
                     <ChatHeader />
-                    <div className="flex-1 overflow-y-auto bg-[#F8FAFC]">
-                      <AnimatePresence>
+                    <div className="flex-1 overflow-y-auto bg-[#F5F8FC]">
+                      <AnimatePresence mode="popLayout">
                         {messages.map((msg, index) => (
-                          <StyledMessageComponent
+                          <MessageComponent
                             key={msg.id}
                             message={msg}
                             onEdit={handleEditMessage}
@@ -1207,43 +812,45 @@ function ChatInterface() {
                       <div ref={messagesEndRef} className="h-32" />
                     </div>
 
-                    <div className="bg-white border-t border-gray-100 p-4">
-                      <StyledChatInputBox
-                        message={message}
-                        setMessage={setMessage}
-                        handleSendMessage={handleSendMessage}
-                        handleStopRequest={handleStopRequest}
-                        isStreaming={isStreaming}
-                        commandFilter={commandFilter}
-                        setCommandFilter={setCommandFilter}
-                        selectedButtons={selectedButtons}
-                        setSelectedButtons={setSelectedButtons}
-                      />
+                    <div className="bg-white border-t border-gray-100 p-4 flex justify-center">
+                      <div className="w-3/4 max-w-3xl">
+                        <ChatInputBox
+                          message={message}
+                          setMessage={setMessage}
+                          handleSendMessage={handleSendMessage}
+                          handleStopRequest={handleStopRequest}
+                          isStreaming={isStreaming}
+                          commandFilter={commandFilter}
+                          setCommandFilter={setCommandFilter}
+                          selectedButtons={selectedButtons}
+                          setSelectedButtons={setSelectedButtons}
+                        />
 
-                      {message.startsWith("/") && (
-                        <div className="mt-2">
-                          <CommandMenu
-                            isOpen={true}
-                            onSelect={handleCommandSelect}
-                            filter={commandFilter}
-                            splitView={splitView}
-                          />
-                        </div>
-                      )}
+                        {message.startsWith("/") && (
+                          <div className="mt-2">
+                            <CommandMenu
+                              isOpen={true}
+                              onSelect={handleCommandSelect}
+                              filter={commandFilter}
+                              splitView={splitView}
+                            />
+                          </div>
+                        )}
 
-                      <p className="text-xs text-gray-400 mt-2 text-center">
-                        Powered by FiNAC AI. <br />
-                        Icons by{" "}
-                        <a
-                          className="underline"
-                          href="https://icons8.com"
-                          target="_blank"
-                        >
-                          Icons8
-                        </a>
-                      </p>
+                        <p className="text-xs text-gray-400 mt-2 text-center">
+                          Powered by FiNAC AI. <br />
+                          Icons by{" "}
+                          <a
+                            className="underline"
+                            href="https://icons8.com"
+                            target="_blank"
+                          >
+                            Icons8
+                          </a>
+                        </p>
+                      </div>
                     </div>
-                  </>
+                  </motion.div>
                 )}
               </div>
               <div
@@ -1341,9 +948,14 @@ function ChatInterface() {
                     isStreaming={isStreaming}
                   />
                 ) : (
-                  <>
-                    <div className="flex-1 overflow-y-auto">
-                      <AnimatePresence>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex flex-col h-full"
+                  >
+                    <div className="flex-1 overflow-y-auto bg-[#F5F8FC]">
+                      <AnimatePresence mode="popLayout">
                         {messages.map((msg, index) => (
                           <MessageComponent
                             key={msg.id}
@@ -1362,37 +974,35 @@ function ChatInterface() {
                       <div ref={messagesEndRef} />
                     </div>
 
-                    <div className="">
-                      <div className="max-w-3xl mx-auto p-4">
-                        <div className="sticky bottom-0 p-4">
-                          <ChatInputBox
-                            message={message}
-                            setMessage={setMessage}
-                            handleSendMessage={handleSendMessage}
-                            handleStopRequest={handleStopRequest}
-                            isStreaming={isStreaming}
-                            commandFilter={commandFilter}
-                            setCommandFilter={setCommandFilter}
-                            selectedButtons={selectedButtons}
-                            setSelectedButtons={setSelectedButtons}
-                          />
+                    <div className="bg-white border-t border-gray-100 p-4 flex justify-center">
+                      <div className="w-3/4 max-w-3xl">
+                        <ChatInputBox
+                          message={message}
+                          setMessage={setMessage}
+                          handleSendMessage={handleSendMessage}
+                          handleStopRequest={handleStopRequest}
+                          isStreaming={isStreaming}
+                          commandFilter={commandFilter}
+                          setCommandFilter={setCommandFilter}
+                          selectedButtons={selectedButtons}
+                          setSelectedButtons={setSelectedButtons}
+                        />
 
-                          {message.startsWith("/") && (
-                            <CommandMenu
-                              isOpen={true}
-                              onSelect={handleCommandSelect}
-                              filter={commandFilter}
-                              splitView={splitView}
-                            />
-                          )}
-                        </div>
-                        <p className="text-xs text-gray-500 mt-2 text-center">
-                          GPT can make mistakes. It is not a bug, it is a
-                          feature.
+                        {message.startsWith("/") && (
+                          <CommandMenu
+                            isOpen={true}
+                            onSelect={handleCommandSelect}
+                            filter={commandFilter}
+                            splitView={splitView}
+                          />
+                        )}
+                        
+                        <p className="text-xs text-gray-400 mt-2 text-center">
+                          Powered by FiNAC AI.
                         </p>
                       </div>
                     </div>
-                  </>
+                  </motion.div>
                 )}
               </div>
             </>
@@ -1419,12 +1029,17 @@ function ChatInterface() {
                 isStreaming={isStreaming}
               />
             ) : (
-              <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="flex flex-col h-full"
+              >
                 <ChatHeader />
-                <div className="flex-1 overflow-y-auto bg-[#F8FAFC]">
-                  <AnimatePresence>
+                <div className="flex-1 overflow-y-auto bg-[#F5F8FC]">
+                  <AnimatePresence mode="popLayout">
                     {messages.map((msg, index) => (
-                      <StyledMessageComponent
+                      <MessageComponent
                         key={msg.id}
                         message={msg}
                         onEdit={handleEditMessage}
@@ -1441,43 +1056,45 @@ function ChatInterface() {
                   <div ref={messagesEndRef} className="h-32" />
                 </div>
 
-                <div className="bg-white border-t border-gray-100 p-4">
-                  <StyledChatInputBox
-                    message={message}
-                    setMessage={setMessage}
-                    handleSendMessage={handleSendMessage}
-                    handleStopRequest={handleStopRequest}
-                    isStreaming={isStreaming}
-                    commandFilter={commandFilter}
-                    setCommandFilter={setCommandFilter}
-                    selectedButtons={selectedButtons}
-                    setSelectedButtons={setSelectedButtons}
-                  />
+                <div className="bg-white border-t border-gray-100 p-4 flex justify-center">
+                  <div className="w-3/4 max-w-3xl">
+                    <ChatInputBox
+                      message={message}
+                      setMessage={setMessage}
+                      handleSendMessage={handleSendMessage}
+                      handleStopRequest={handleStopRequest}
+                      isStreaming={isStreaming}
+                      commandFilter={commandFilter}
+                      setCommandFilter={setCommandFilter}
+                      selectedButtons={selectedButtons}
+                      setSelectedButtons={setSelectedButtons}
+                    />
 
-                  {message.startsWith("/") && (
-                    <div className="mt-2">
-                      <CommandMenu
-                        isOpen={true}
-                        onSelect={handleCommandSelect}
-                        filter={commandFilter}
-                        splitView={splitView}
-                      />
-                    </div>
-                  )}
+                    {message.startsWith("/") && (
+                      <div className="mt-2">
+                        <CommandMenu
+                          isOpen={true}
+                          onSelect={handleCommandSelect}
+                          filter={commandFilter}
+                          splitView={splitView}
+                        />
+                      </div>
+                    )}
 
-                  <p className="text-xs text-gray-400 mt-2 text-center">
-                    Powered by FiNAC AI. <br />
-                    Icons by{" "}
-                    <a
-                      className="underline"
-                      href="https://icons8.com"
-                      target="_blank"
-                    >
-                      Icons8
-                    </a>
-                  </p>
+                    <p className="text-xs text-gray-400 mt-2 text-center">
+                      Powered by FiNAC AI. <br />
+                      Icons by{" "}
+                      <a
+                        className="underline"
+                        href="https://icons8.com"
+                        target="_blank"
+                      >
+                        Icons8
+                      </a>
+                    </p>
+                  </div>
                 </div>
-              </>
+              </motion.div>
             )}
           </div>
         </div>
