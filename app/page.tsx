@@ -792,7 +792,7 @@ function ChatInterface() {
                     className="flex flex-col h-full"
                   >
                     <ChatHeader />
-                    <div className="flex-1 overflow-y-auto bg-[#F5F8FC]">
+                    <div className="flex-1 overflow-y-auto bg-[#fff]">
                       <AnimatePresence mode="popLayout">
                         {messages.map((msg, index) => (
                           <MessageComponent
@@ -812,7 +812,7 @@ function ChatInterface() {
                       <div ref={messagesEndRef} className="h-32" />
                     </div>
 
-                    <div className="bg-white border-t border-gray-100 p-4 flex justify-center">
+                    <div className=" border-gray-100 p-4 flex justify-center">
                       <div className="w-3/4 max-w-3xl">
                         <ChatInputBox
                           message={message}
@@ -954,7 +954,7 @@ function ChatInterface() {
                     transition={{ duration: 0.3 }}
                     className="flex flex-col h-full"
                   >
-                    <div className="flex-1 overflow-y-auto bg-[#F5F8FC]">
+                    <div className="flex-1 overflow-y-auto bg-[#fff]">
                       <AnimatePresence mode="popLayout">
                         {messages.map((msg, index) => (
                           <MessageComponent
@@ -974,7 +974,7 @@ function ChatInterface() {
                       <div ref={messagesEndRef} />
                     </div>
 
-                    <div className="bg-white border-t border-gray-100 p-4 flex justify-center">
+                    <div className=" border-gray-100 p-4 flex justify-center">
                       <div className="w-3/4 max-w-3xl">
                         <ChatInputBox
                           message={message}
@@ -1036,7 +1036,7 @@ function ChatInterface() {
                 className="flex flex-col h-full"
               >
                 <ChatHeader />
-                <div className="flex-1 overflow-y-auto bg-[#F5F8FC]">
+                <div className="flex-1 overflow-y-auto bg-[#fff]">
                   <AnimatePresence mode="popLayout">
                     {messages.map((msg, index) => (
                       <MessageComponent
@@ -1056,7 +1056,7 @@ function ChatInterface() {
                   <div ref={messagesEndRef} className="h-32" />
                 </div>
 
-                <div className="bg-white border-t border-gray-100 p-4 flex justify-center">
+                <div className=" border-gray-100 p-4 flex justify-center">
                   <div className="w-3/4 max-w-3xl">
                     <ChatInputBox
                       message={message}
