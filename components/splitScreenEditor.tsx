@@ -32,9 +32,9 @@ export function SplitScreenEditor({ markdown }: SplitScreenEditorProps) {
         try {
           // Ensure the element is empty before creating a new instance
           if (editorRef.current.firstChild) {
-            editorRef.current.innerHTML = '';
+            editorRef.current.innerHTML = "";
           }
-          
+
           crepeInstanceRef.current = await new Crepe({
             root: editorRef.current,
             defaultValue: markdown,
@@ -65,30 +65,25 @@ export function SplitScreenEditor({ markdown }: SplitScreenEditorProps) {
           font-style: normal;
         }
 
+        /* toolbar */
         milkdown-toolbar {
-          background-color: #2f2f2f !important;
+          background-color: #fff !important;
+          border-bottom: 1px solid #e5e7eb !important;
         }
-
+        milkdown-toolbar * {
+          color: #374151 !important;
+        }
         milkdown-toolbar [data-active="true"],
         milkdown-toolbar .active,
         milkdown-toolbar .toolbar-item.active,
         milkdown-toolbar button[aria-pressed="true"] {
-          background-color: #e0e0e0 !important;
+          background-color: #1A479D !important;
           color: #fff !important;
         }
 
-        milkdown-toolbar * {
-          -webkit-user-select: none !important;
-          -moz-user-select: none !important;
-          -ms-user-select: none !important;
-          user-select: none !important;
-          cursor: pointer !important;
-        }
-          
+        /* editor text */
         .milkdown-editor, .milkdown-editor * {
-          color: #fff !important;
-          font-family: 'Roboto', sans-serif !important;
-          cursor: text;
+          color: #111827 !important;
         }
         .milkdown-editor p {
           margin-bottom: 1.1em !important;
@@ -96,104 +91,48 @@ export function SplitScreenEditor({ markdown }: SplitScreenEditorProps) {
           line-height: 1.4 !important;
         }
         .milkdown-editor code {
-          color: #d4d4d4 !important;
-          background-color: #1e1e1e !important;
-          border-radius: 12px;
-          font-family: 'Source Code Pro' !important;
-        }
-        .milkdown-editor .operation-item {
-          cursor: pointer !important;
+          color: #111827 !important;
+          background-color: #f3f4f6 !important;
         }
 
-        milkdown-link-edit .link-edit {
-          background-color: #2f2f2f !important;
-          color: #fff !important;
-          margin: 12px !important;
-        }
-
+        /* link editing */
+        milkdown-link-edit .link-edit,
         milkdown-link-preview .link-preview {
-          background-color: #2f2f2f !important;
-          cursor: pointer !important;
+          background-color: #1A479D !important;
           color: #fff !important;
         }
 
-        milkdown-link-preview {
-          padding: 12px !important;
-        }
-
+        /* tables */
         .milkdown-editor table,
         .milkdown-editor .milkdown-table {
-          border-radius: 12px !important;
-          background-color: transparent !important;
-          border-collapse: separate !important;
-          border-spacing: 0 !important;
-          overflow: hidden !important;
-          border: 1px solid #636363 !important;
+          border: 1px solid #d1d5db !important;
         }
-        
-        .milkdown-editor table tr,
-        .milkdown-editor .milkdown-table tr {
-          height: auto !important;
-          line-height: 1 !important;
-        }
-        
-        .milkdown-editor table td,
-        .milkdown-editor table th,
-        .milkdown-editor .milkdown-table td,
-        .milkdown-editor .milkdown-table th {
-          border: 1px solid #636363 !important;
-          padding: 2px 12px !important;
-          min-height: unset !important;
-          line-height: 1.2 !important;
-          height: auto !important;
-        }
-
         .milkdown-editor table th,
         .milkdown-editor .milkdown-table th {
-          border: 1px solid #636363 !important;
-          padding-left: 12px !important;
-          padding-right: 12px !important;
-          padding-bottom: 0px !important;
-          background-color: #444444 !important;
+          background-color: #1A479D !important;
+          color: #fff !important;
         }
 
+        /* hr */
         hr {
-          border: #636363 !important;
-          background-color: #636363 !important;
-          margin-top: 1.5em !important;
-          margin-bottom: 1.5em !important;
+          border-color: #d1d5db !important;
         }
-        
+
+        /* code block */
         .milkdown-editor milkdown-code-block,
         .milkdown-editor milkdown-code-block * {
-          color: #d4d4d4 !important;
-          background-color: #1e1e1e !important;
-          border-radius: 12px;
-          font-family: 'Source Code Pro' !important;
+          background-color: #f3f4f6 !important;
+          color: #111827 !important;
         }
 
+        /* selection */
         .milkdown-editor ::selection {
-          background: #085eec !important;
+          background: rgba(26,71,157,0.2) !important;
         }
+      `}</style>
 
-        milkdown-block-handle .operation-item:hover {
-          background-color: #2f2f2f !important;
-          cursor: pointer !important;
-        }
-        milkdown-block-handle {
-          cursor: pointer !important;
-        }
-        milkdown-block-handle svg {
-          cursor: pointer !important;
-        } 
-        p .crepe-placeholder {
-          color: #fff !important;
-        }         
-        `}</style>
-      <div
-        ref={editorRef}
-        className="milkdown-editor bg-[#2f2f2f] h-full w-full"
-      />
+      {/* light background */}
+      <div ref={editorRef} className="milkdown-editor bg-white h-full w-full" />
     </>
   );
 }
