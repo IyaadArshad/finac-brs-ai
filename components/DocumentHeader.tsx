@@ -5,8 +5,154 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
-import { ShareDialog } from "@/components/ShareDialog";
-import { VersionHistoryDialog } from "@/components/VersionHistoryDialog";
+import React from "react";
+import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
+import { Button } from "@/components/ui/button";
+import { DialogClose } from "@radix-ui/react-dialog";
+import { DialogHeader } from "./ui/dialog";
+
+interface ShareDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  documentName: string;
+}
+
+function ShareDialog({
+  isOpen,
+  onClose,
+  documentName,
+}: ShareDialogProps) {
+  const [copyStatus, setCopyStatus] = useState<"idle" | "copied">("idle");
+
+  // Create a URL-friendly slug from the document name
+  // Use the document name directly without modifications
+  const shareUrl = `https://brs-agent.datamation.lk/shared/canvas/${documentName}`;
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopyStatus("copied");
+      setTimeout(() => setCopyStatus("idle"), 2000);
+    } catch (error) {
+      console.error("Failed to copy URL:", error);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="bg-[#2f2f2f] border-[#444444] text-white sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-medium text-white">
+            Share '{documentName.replace(/\.\w+$/, "")}'
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="mt-4 space-y-4">
+          <div className="flex items-center bg-[#1e1e1e] rounded-lg overflow-hidden pr-2">
+            <input
+              type="text"
+              value={shareUrl}
+              readOnly
+              className="flex-1 bg-transparent border-none py-3 pl-4 pr-2 text-sm text-white focus:outline-none"
+            />
+            <button
+              onClick={handleCopy}
+              className="ml-2 py-1.5 px-3 rounded-md bg-[#15847e] hover:bg-[#10655e] transition-colors text-white text-sm font-medium"
+            >
+              {copyStatus === "copied" ? "Copied!" : "Copy"}
+            </button>
+          </div>
+
+          <p className="text-sm text-gray-300">
+            Anyone with the link can view and edit. Your chat messages will not
+            be shared.
+          </p>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+interface VersionHistoryDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  versions: Record<string, string> | null;
+  currentVersion: number;
+  onSelectVersion: (version: number) => void;
+  documentName: string;
+}
+
+function VersionHistoryDialog({
+  isOpen,
+  onClose,
+  versions,
+  currentVersion,
+  onSelectVersion,
+  documentName,
+}: VersionHistoryDialogProps) {
+  if (!versions) return null;
+
+  // Convert versions object keys to numbers and sort in descending order
+  const sortedVersions = Object.keys(versions)
+    .map((key) => parseInt(key))
+    .sort((a, b) => b - a);
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="bg-[#2f2f2f] text-white border-[#4e4e4e] max-w-xl">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-semibold mb-2">
+            Version History - {documentName}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="max-h-[60vh] overflow-y-auto pr-2">
+          {sortedVersions.length === 0 ? (
+            <div className="py-4 text-center text-gray-400">
+              No version history available
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {sortedVersions.map((version) => (
+                <div
+                  key={version}
+                  className={`p-4 rounded-lg cursor-pointer transition-colors ${
+                    version === currentVersion
+                      ? "bg-[#4e4e4e] border border-[#6e6e6e]"
+                      : "bg-[#363636] hover:bg-[#444444]"
+                  }`}
+                  onClick={() => onSelectVersion(version)}
+                >
+                  <div className="flex justify-between items-center">
+                    <div className="font-medium">
+                      Version {version}
+                      {version === currentVersion && " (Current)"}
+                    </div>
+                    {/* Could add timestamp here if available in the API response */}
+                  </div>
+                  <div className="mt-2 text-sm text-gray-300 line-clamp-2">
+                    {versions[version.toString()].substring(0, 100)}
+                    {versions[version.toString()].length > 100 ? "..." : ""}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-end gap-2 mt-4">
+          <DialogClose asChild>
+            <Button
+              variant="secondary"
+              className="bg-[#4e4e4e] hover:bg-[#5a5a5a] text-white"
+            >
+              Close
+            </Button>
+          </DialogClose>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 interface DocumentHeaderProps {
   documentName: string;
