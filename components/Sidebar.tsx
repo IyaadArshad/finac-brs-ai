@@ -115,7 +115,7 @@ const recentlyOpenedDocuments = [
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
+                  className="p-2 hover:cursor-pointer rounded-lg hover:bg-gray-200 transition-colors"
                   aria-label="Search chats"
                 >
                   <Image
@@ -134,7 +134,7 @@ const recentlyOpenedDocuments = [
               <TooltipTrigger asChild>
                 <button
                   onClick={onNewChat}
-                  className="p-2 rounded-lg bg-[#1A479D] hover:bg-[#153A82] text-white transition-colors"
+                  className="p-2 rounded-lg hover:cursor-pointer bg-[#1A479D] hover:bg-[#153A82] text-white transition-colors"
                   aria-label="New draft"
                 >
                   <Image
@@ -160,7 +160,7 @@ const recentlyOpenedDocuments = [
             <TooltipTrigger asChild>
               <button
                 className={cn(
-                  "flex items-center rounded-lg transition-colors",
+                  "flex items-center hover:cursor-pointer rounded-lg transition-colors",
                   isCollapsed
                     ? "p-2 hover:bg-gray-100"
                     : "px-3 py-2 w-full hover:bg-gray-100 text-left"
