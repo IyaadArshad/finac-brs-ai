@@ -1,12 +1,8 @@
-import React from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle
-} from "@radix-ui/react-dialog";
+import React from "react";
+import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
-import { DialogClose } from '@radix-ui/react-dialog';
-import { DialogHeader } from './ui/dialog';
+import { DialogClose } from "@radix-ui/react-dialog";
+import { DialogHeader } from "./ui/dialog";
 
 interface VersionHistoryDialogProps {
   isOpen: boolean;
@@ -23,13 +19,13 @@ export function VersionHistoryDialog({
   versions,
   currentVersion,
   onSelectVersion,
-  documentName
+  documentName,
 }: VersionHistoryDialogProps) {
   if (!versions) return null;
-  
+
   // Convert versions object keys to numbers and sort in descending order
   const sortedVersions = Object.keys(versions)
-    .map(key => parseInt(key))
+    .map((key) => parseInt(key))
     .sort((a, b) => b - a);
 
   return (
@@ -40,7 +36,7 @@ export function VersionHistoryDialog({
             Version History - {documentName}
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="max-h-[60vh] overflow-y-auto pr-2">
           {sortedVersions.length === 0 ? (
             <div className="py-4 text-center text-gray-400">
@@ -49,11 +45,11 @@ export function VersionHistoryDialog({
           ) : (
             <div className="space-y-3">
               {sortedVersions.map((version) => (
-                <div 
+                <div
                   key={version}
                   className={`p-4 rounded-lg cursor-pointer transition-colors ${
-                    version === currentVersion 
-                      ? "bg-[#4e4e4e] border border-[#6e6e6e]" 
+                    version === currentVersion
+                      ? "bg-[#4e4e4e] border border-[#6e6e6e]"
                       : "bg-[#363636] hover:bg-[#444444]"
                   }`}
                   onClick={() => onSelectVersion(version)}
@@ -74,10 +70,13 @@ export function VersionHistoryDialog({
             </div>
           )}
         </div>
-        
+
         <div className="flex justify-end gap-2 mt-4">
           <DialogClose asChild>
-            <Button variant="secondary" className="bg-[#4e4e4e] hover:bg-[#5a5a5a] text-white">
+            <Button
+              variant="secondary"
+              className="bg-[#4e4e4e] hover:bg-[#5a5a5a] text-white"
+            >
               Close
             </Button>
           </DialogClose>

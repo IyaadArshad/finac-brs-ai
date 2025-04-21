@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import Cookies from "js-cookie";
 import { MessageProps } from "@/types/types";
 import { motion } from "framer-motion";
 import { parseMarkdown } from "@/utils/markdownParser";
 import { groupWords } from "./camelCased/groupWords";
 import { WordSpan } from "./WordSpan";
-import Image from "next/image";
 import {
   Copy,
   RotateCcw,
@@ -61,7 +59,9 @@ export function MessageComponent({
       } relative hover:bg-gray-50`}
       aria-label={`Message from ${message.role}`}
     >
-      <div className={`max-w-3xl ${message.role === "user" ? "text-right" : ""}`}>
+      <div
+        className={`max-w-3xl ${message.role === "user" ? "text-right" : ""}`}
+      >
         {isEditing ? (
           <input
             type="text"
@@ -75,11 +75,13 @@ export function MessageComponent({
             }}
           />
         ) : (
-          <div className={`markdown-body prose max-w-none ${
-            message.role === "user" 
-              ? "bg-[#EBF2FF] text-[#1A479D] px-4 py-3 rounded-xl"
-              : ""
-          }`}>
+          <div
+            className={`markdown-body prose max-w-none ${
+              message.role === "user"
+                ? "bg-[#EBF2FF] text-[#1A479D] px-4 py-3 rounded-xl"
+                : ""
+            }`}
+          >
             {message.role === "assistant" ? (
               <div
                 style={{

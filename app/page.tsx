@@ -16,7 +16,6 @@ import { PanelLeft } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense } from "react";
 import Image from "next/image";
-import { formatDate } from "@/lib/utils";
 import { WelcomeScreen } from "@/components/WelcomeScreen";
 
 declare global {
@@ -59,11 +58,16 @@ function ChatInterface() {
   const [splitView, setSplitView] = useState(false);
   const [editorWidth, setEditorWidth] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
-  const [user, setUser] = useState<{ name: string; email: string; avatar: string; isGuest: boolean }>({
+  const [user, setUser] = useState<{
+    name: string;
+    email: string;
+    avatar: string;
+    isGuest: boolean;
+  }>({
     name: "Guest User",
     email: "guest@datamation.lk",
     avatar: "/icons/user-male-circle.png",
-    isGuest: true
+    isGuest: true,
   });
   const [messages, setMessages] = useState<Message[]>([]);
   const [isConversationStarted, setIsConversationStarted] = useState(false);
@@ -996,7 +1000,7 @@ function ChatInterface() {
                             splitView={splitView}
                           />
                         )}
-                        
+
                         <p className="text-xs text-gray-400 mt-2 text-center">
                           Powered by FiNAC AI.
                         </p>
@@ -1016,7 +1020,9 @@ function ChatInterface() {
             conversationHistory={conversationHistory}
             onNewChat={handleNewChat}
             onSelectConversation={handleSelectConversation}
-            currentConversationId={messages.length > 0 ? conversationHistory[0]?.id : undefined}
+            currentConversationId={
+              messages.length > 0 ? conversationHistory[0]?.id : undefined
+            }
           />
 
           <div className="flex-1 h-screen chat-container screen text-black flex flex-col overflow-hidden bg-white">
